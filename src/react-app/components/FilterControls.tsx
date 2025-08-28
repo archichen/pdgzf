@@ -1,13 +1,7 @@
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 import { X, Search } from "lucide-react"
 import { FilterState, ROOM_TYPE_OPTIONS, RENT_RANGE_OPTIONS } from "@/services/house"
 
@@ -24,10 +18,10 @@ export default function FilterControls({
 }: FilterControlsProps) {
   const hasActiveFilters = Object.entries(filters).some(([key, value]) => {
     if (key === 'keywords') return value !== ''
-    return value !== null
+    return Array.isArray(value) ? value.length > 0 : value !== null
   })
 
-  const updateFilter = (key: keyof FilterState, value: string | number | null) => {
+  const updateFilter = (key: keyof FilterState, value: any) => {
     onFiltersChange({
       ...filters,
       [key]: value
@@ -37,9 +31,25 @@ export default function FilterControls({
   const clearFilter = (key: keyof FilterState) => {
     if (key === 'keywords') {
       updateFilter(key, '')
+    } else if (key === 'typeNames' || key === 'rents') {
+      updateFilter(key, [])
     } else {
       updateFilter(key, null)
     }
+  }
+
+  // 多选框处理函数
+  const handleCheckboxChange = (key: keyof FilterState, checkedValue: string, checked: boolean) => {
+    const currentValues = filters[key] as string[] || []
+    let newValues: string[]
+    
+    if (checked) {
+      newValues = [...currentValues, checkedValue]
+    } else {
+      newValues = currentValues.filter(v => v !== checkedValue)
+    }
+    
+    updateFilter(key, newValues)
   }
 
   
@@ -69,40 +79,92 @@ export default function FilterControls({
       </div>
 
       {/* 筛选条件行 */}
-      <div className="flex flex-wrap gap-3 items-center">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 区域筛选 */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">区域：</label>
+          <div className="space-y-1">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="region-pudong"
+                checked={filters.region === '浦东新区'}
+                onCheckedChange={(checked) => 
+                  updateFilter('region', checked ? '浦东新区' : null)
+                }
+              />
+              <label htmlFor="region-pudong" className="text-sm">浦东新区</label>
+            </div>
+          </div>
+        </div>
+
+        {/* 小区筛选 */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">小区：</label>
+          <div className="space-y-1">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="township-sample1"
+                checked={filters.township === '示例小区1'}
+                onCheckedChange={(checked) => 
+                  updateFilter('township', checked ? '示例小区1' : null)
+                }
+              />
+              <label htmlFor="township-sample1" className="text-sm">示例小区1</label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="township-sample2"
+                checked={filters.township === '示例小区2'}
+                onCheckedChange={(checked) => 
+                  updateFilter('township', checked ? '示例小区2' : null)
+                }
+              />
+              <label htmlFor="township-sample2" className="text-sm">示例小区2</label>
+            </div>
+          </div>
+        </div>
+
         {/* 房间类型筛选 */}
-        <Select
-          value={filters.typeName || 'all'}
-          onValueChange={(value) => updateFilter('typeName', value === 'all' ? null : value)}
-        >
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="房间类型" />
-          </SelectTrigger>
-          <SelectContent>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">户型：</label>
+          <div className="space-y-1 max-h-40 overflow-y-auto">
             {ROOM_TYPE_OPTIONS.map((option) => (
-              <SelectItem key={option.value || 'all'} value={option.value || 'all'}>
-                {option.label}
-              </SelectItem>
+              <div key={option.value || 'all'} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`type-${option.value || 'all'}`}
+                  checked={filters.typeNames?.includes(String(option.value)) || false}
+                  onCheckedChange={(checked) => 
+                    handleCheckboxChange('typeNames', String(option.value), checked as boolean)
+                  }
+                />
+                <label htmlFor={`type-${option.value || 'all'}`} className="text-sm">
+                  {option.label}
+                </label>
+              </div>
             ))}
-          </SelectContent>
-        </Select>
+          </div>
+        </div>
 
         {/* 租金范围筛选 */}
-        <Select
-          value={filters.rent || 'all'}
-          onValueChange={(value) => updateFilter('rent', value === 'all' ? null : value)}
-        >
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="租金范围" />
-          </SelectTrigger>
-          <SelectContent>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">租金范围：</label>
+          <div className="space-y-1 max-h-40 overflow-y-auto">
             {RENT_RANGE_OPTIONS.map((option) => (
-              <SelectItem key={option.value || 'all'} value={option.value || 'all'}>
-                {option.label}
-              </SelectItem>
+              <div key={option.value || 'all'} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`rent-${option.value || 'all'}`}
+                  checked={filters.rents?.includes(String(option.value)) || false}
+                  onCheckedChange={(checked) => 
+                    handleCheckboxChange('rents', String(option.value), checked as boolean)
+                  }
+                />
+                <label htmlFor={`rent-${option.value || 'all'}`} className="text-sm">
+                  {option.label}
+                </label>
+              </div>
             ))}
-          </SelectContent>
-        </Select>
+          </div>
+        </div>
       </div>
 
       {/* 活跃筛选条件显示 */}
@@ -121,26 +183,50 @@ export default function FilterControls({
               />
             </Badge>
           )}
-          {filters.typeName && (
+          {filters.region && (
             <Badge variant="secondary" className="flex items-center space-x-1">
-              <span>房型: {ROOM_TYPE_OPTIONS.find(opt => opt.value === filters.typeName)?.label}</span>
+              <span>区域: {filters.region}</span>
               <X 
                 className="h-3 w-3 cursor-pointer hover:text-destructive" 
                 onClick={(e) => {
                   e.preventDefault()
-                  clearFilter('typeName')
+                  clearFilter('region')
                 }}
               />
             </Badge>
           )}
-          {filters.rent && (
+          {filters.township && (
             <Badge variant="secondary" className="flex items-center space-x-1">
-              <span>租金: {RENT_RANGE_OPTIONS.find(opt => opt.value === filters.rent)?.label}</span>
+              <span>小区: {filters.township}</span>
               <X 
                 className="h-3 w-3 cursor-pointer hover:text-destructive" 
                 onClick={(e) => {
                   e.preventDefault()
-                  clearFilter('rent')
+                  clearFilter('township')
+                }}
+              />
+            </Badge>
+          )}
+          {filters.typeNames && filters.typeNames.length > 0 && (
+            <Badge variant="secondary" className="flex items-center space-x-1">
+              <span>户型: {filters.typeNames.map(t => ROOM_TYPE_OPTIONS.find(opt => opt.value === t)?.label).join(', ')}</span>
+              <X 
+                className="h-3 w-3 cursor-pointer hover:text-destructive" 
+                onClick={(e) => {
+                  e.preventDefault()
+                  clearFilter('typeNames')
+                }}
+              />
+            </Badge>
+          )}
+          {filters.rents && filters.rents.length > 0 && (
+            <Badge variant="secondary" className="flex items-center space-x-1">
+              <span>租金: {filters.rents.map(r => RENT_RANGE_OPTIONS.find(opt => opt.value === r)?.label).join(', ')}</span>
+              <X 
+                className="h-3 w-3 cursor-pointer hover:text-destructive" 
+                onClick={(e) => {
+                  e.preventDefault()
+                  clearFilter('rents')
                 }}
               />
             </Badge>

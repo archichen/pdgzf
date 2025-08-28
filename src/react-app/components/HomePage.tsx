@@ -14,19 +14,21 @@ export default function HomePage() {
   // 筛选条件状态管理
   const [filters, setFilters] = useState<FilterState>({
     keywords: "",
+    region: null,
     township: null,
     projectId: null,
-    typeName: null,
-    rent: null,
+    typeNames: [],
+    rents: [],
   })
 
   const { data, isLoading, error } = useHouseList({
     where: {
       keywords: "",
+      region: null,
       township: null,
       projectId: null,
-      typeName: null,
-      rent: null,
+      typeNames: [],
+      rents: [],
     },
     pageSize: 99999, // 获取所有数据
   })
@@ -116,10 +118,11 @@ export default function HomePage() {
   const handleClearFilters = () => {
     setFilters({
       keywords: "",
+      region: null,
       township: null,
       projectId: null,
-      typeName: null,
-      rent: null,
+      typeNames: [],
+      rents: [],
     })
   }
 

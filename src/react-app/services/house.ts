@@ -46,10 +46,11 @@ export interface HouseListResponse {
 // 筛选条件类型
 export interface FilterState {
   keywords: string
+  region: string | null
   township: string | null
   projectId: number | null
-  typeName: string | null
-  rent: string | null
+  typeNames: string[]
+  rents: string[]
 }
 
 // 请求参数类型
@@ -119,41 +120,41 @@ export const filterHouses = (houses: House[], filters: FilterState): House[] => 
       }
     }
 
-    // 房间类型筛选
-    if (filters.typeName) {
-      if (String(house.typeName) !== filters.typeName) {
+    // 房间类型筛选（多选）
+    if (filters.typeNames.length > 0) {
+      if (!house.typeName || !filters.typeNames.includes(String(house.typeName))) {
         return false
       }
     }
 
-    // 租金范围筛选
-    if (filters.rent) {
+    // 租金范围筛选（多选）
+    if (filters.rents.length > 0) {
       const rent = house.rent || 0
-      switch (filters.rent) {
-        case 'Below1000':
-          if (rent >= 1000) return false
-          break
-        case 'Between1000And1999':
-          if (rent < 1000 || rent > 1999) return false
-          break
-        case 'Between2000And2999':
-          if (rent < 2000 || rent > 2999) return false
-          break
-        case 'Between3000And3999':
-          if (rent < 3000 || rent > 3999) return false
-          break
-        case 'Between4000And4999':
-          if (rent < 4000 || rent > 4999) return false
-          break
-        case 'Between5000And5999':
-          if (rent < 5000 || rent > 5999) return false
-          break
-        case 'Between6000And6999':
-          if (rent < 6000 || rent > 6999) return false
-          break
-        case 'Between7000And8000':
-          if (rent < 7000 || rent > 8000) return false
-          break
+      const matchesAnyRange = filters.rents.some(rentRange => {
+        switch (rentRange) {
+          case 'Below1000':
+            return rent < 1000
+          case 'Between1000And1999':
+            return rent >= 1000 && rent <= 1999
+          case 'Between2000And2999':
+            return rent >= 2000 && rent <= 2999
+          case 'Between3000And3999':
+            return rent >= 3000 && rent <= 3999
+          case 'Between4000And4999':
+            return rent >= 4000 && rent <= 4999
+          case 'Between5000And5999':
+            return rent >= 5000 && rent <= 5999
+          case 'Between6000And6999':
+            return rent >= 6000 && rent <= 6999
+          case 'Between7000And8000':
+            return rent >= 7000 && rent <= 8000
+          default:
+            return false
+        }
+      })
+      
+      if (!matchesAnyRange) {
+        return false
       }
     }
 
