@@ -7,6 +7,7 @@ import {
 import { useHouseList, type House } from "@/services/house"
 import ViewToggle from "@/components/ViewToggle"
 import HouseCard from "@/components/HouseCard"
+import CardSortControls from "@/components/CardSortControls"
 import {
   useReactTable,
   getCoreRowModel,
@@ -216,6 +217,50 @@ export default function HouseList() {
     return "list"
   })
 
+  // 卡片视图排序状态管理
+  const [cardSortBy, setCardSortBy] = useState<string>("area")
+  const [cardSortOrder, setCardSortOrder] = useState<"asc" | "desc">("asc")
+
+  // 排序数据函数
+  const sortHouses = (houses: House[], sortBy: string, sortOrder: "asc" | "desc"): House[] => {
+    return [...houses].sort((a, b) => {
+      let aValue: any, bValue: any
+
+      switch (sortBy) {
+        case "area":
+          aValue = a.area ? parseFloat(a.area) : 0
+          bValue = b.area ? parseFloat(b.area) : 0
+          break
+        case "rent":
+          aValue = a.rent || 0
+          bValue = b.rent || 0
+          break
+        case "queueCount":
+          aValue = a.queueCount || 0
+          bValue = b.queueCount || 0
+          break
+        case "queuePosition":
+          aValue = a.queuePosition || Infinity
+          bValue = b.queuePosition || Infinity
+          break
+        default:
+          return 0
+      }
+
+      if (sortOrder === "asc") {
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+      } else {
+        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0
+      }
+    })
+  }
+
+  // 获取排序后的数据
+  const getSortedHouses = () => {
+    const houses = data?.data.data || []
+    return viewMode === "card" ? sortHouses(houses, cardSortBy, cardSortOrder) : houses
+  }
+
   // 排序状态管理 - 必须在顶层调用
   const [sorting, setSorting] = useState<SortingState>([])
   
@@ -233,6 +278,12 @@ export default function HouseList() {
       sorting,
     },
   })
+
+  // 卡片视图排序处理函数
+  const handleCardSortChange = (sortBy: string, sortOrder: "asc" | "desc") => {
+    setCardSortBy(sortBy)
+    setCardSortOrder(sortOrder)
+  }
 
   // 创建虚拟化实例 - 必须在顶层调用
   const rowVirtualizer = useVirtualizer({
@@ -263,6 +314,7 @@ export default function HouseList() {
   }
 
   const houseData = table.getRowModel().rows
+  const sortedCardData = getSortedHouses()
 
   return (
     <div className="container mx-auto p-6 flex flex-col h-full overflow-hidden">
@@ -274,7 +326,16 @@ export default function HouseList() {
               共 {data?.data.totalCount || 0} 套可租房源
             </p>
           </div>
-          <ViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+          <div className="flex items-center space-x-3">
+            {viewMode === "card" && (
+              <CardSortControls
+                sortBy={cardSortBy}
+                sortOrder={cardSortOrder}
+                onSortChange={handleCardSortChange}
+              />
+            )}
+            <ViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+          </div>
         </div>
       </div>
 
@@ -354,8 +415,8 @@ export default function HouseList() {
           <div className="flex-1 overflow-auto p-4">
             {houseData.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {houseData.map((row) => (
-                  <HouseCard key={row.id} house={row.original} />
+                {sortedCardData.map((house, index) => (
+                  <HouseCard key={`${house.id}-${index}`} house={house} />
                 ))}
               </div>
             ) : (
