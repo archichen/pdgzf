@@ -101,7 +101,7 @@ export default function HomePage() {
 
   // 获取筛选和排序后的数据
   const getFilteredAndSortedHouses = () => {
-    const allHouses = data?.data.data || []
+    const allHouses = (data as any)?.data?.data || []
     
     // 先筛选
     const filteredHouses = filterHouses(allHouses, filters)
@@ -206,7 +206,7 @@ export default function HomePage() {
     )
   }
 
-  const totalCount = data?.data.totalCount || 0
+  const totalCount = (data as any)?.data?.totalCount || 0
   const filteredAndSortedHouses = getFilteredAndSortedHouses()
   const filteredCount = filteredAndSortedHouses.length
 
@@ -233,7 +233,7 @@ export default function HomePage() {
               filters={filters}
               onFiltersChange={handleFiltersChange}
               onClearFilters={handleClearFilters}
-              houses={data?.data.data || []}
+              houses={(data as any)?.data?.data || []}
             >
               <Button variant="outline" className="flex items-center space-x-2">
                 <Filter className="h-4 w-4" />
