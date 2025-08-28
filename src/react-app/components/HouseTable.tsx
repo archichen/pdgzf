@@ -62,15 +62,9 @@ const columns: ColumnDef<House>[] = [
     ),
     cell: ({ row }) => {
       const townshipName = row.original.project?.townshipName
-      const address = row.getValue("address") as string
       return (
         <div className="flex items-center">
-          <div>
-            <div className="font-medium">{townshipName || "未知地点"}</div>
-            {address && (
-              <div className="text-sm text-muted-foreground">{address}</div>
-            )}
-          </div>
+          <div className="font-medium">{townshipName || "未知地点"}</div>
         </div>
       )
     },
