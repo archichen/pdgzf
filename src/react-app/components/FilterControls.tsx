@@ -3,18 +3,20 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { X, Search } from "lucide-react"
-import { FilterState, ROOM_TYPE_OPTIONS, RENT_RANGE_OPTIONS } from "@/services/house"
+import { FilterState, type House, ROOM_TYPE_OPTIONS, RENT_RANGE_OPTIONS } from "@/services/house"
 
 interface FilterControlsProps {
   filters: FilterState
   onFiltersChange: (filters: FilterState) => void
   onClearFilters: () => void
+  houses: House[] // 添加房源数据用于提取区域和小区名
 }
 
 export default function FilterControls({ 
   filters, 
   onFiltersChange, 
-  onClearFilters 
+  onClearFilters,
+  houses
 }: FilterControlsProps) {
   const hasActiveFilters = Object.entries(filters).some(([key, value]) => {
     if (key === 'keywords') return value !== ''
@@ -52,6 +54,20 @@ export default function FilterControls({
     updateFilter(key, newValues)
   }
 
+  // 从房源数据中提取唯一的区域名（townshipName）
+  const uniqueRegions = [...new Set(
+    houses
+      .map(house => house.project?.townshipName)
+      .filter(Boolean)
+  )].sort()
+
+  // 从房源数据中提取唯一的小区名（project.name）
+  const uniqueCommunities = [...new Set(
+    houses
+      .map(house => house.project?.name)
+      .filter(Boolean)
+  )].sort()
+
   
   return (
     <div className="space-y-4">
@@ -83,44 +99,50 @@ export default function FilterControls({
         {/* 区域筛选 */}
         <div className="space-y-2">
           <label className="text-sm font-medium">区域：</label>
-          <div className="space-y-1">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="region-pudong"
-                checked={filters.region === '浦东新区'}
-                onCheckedChange={(checked) => 
-                  updateFilter('region', checked ? '浦东新区' : null)
-                }
-              />
-              <label htmlFor="region-pudong" className="text-sm">浦东新区</label>
-            </div>
+          <div className="space-y-1 max-h-40 overflow-y-auto">
+            {uniqueRegions.length > 0 ? (
+              uniqueRegions.map((region) => (
+                <div key={region} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`region-${region}`}
+                    checked={filters.region === region}
+                    onCheckedChange={(checked) => 
+                      updateFilter('region', checked ? region : null)
+                    }
+                  />
+                  <label htmlFor={`region-${region}`} className="text-sm">
+                    {region}
+                  </label>
+                </div>
+              ))
+            ) : (
+              <div className="text-sm text-muted-foreground">暂无区域数据</div>
+            )}
           </div>
         </div>
 
         {/* 小区筛选 */}
         <div className="space-y-2">
           <label className="text-sm font-medium">小区：</label>
-          <div className="space-y-1">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="township-sample1"
-                checked={filters.township === '示例小区1'}
-                onCheckedChange={(checked) => 
-                  updateFilter('township', checked ? '示例小区1' : null)
-                }
-              />
-              <label htmlFor="township-sample1" className="text-sm">示例小区1</label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="township-sample2"
-                checked={filters.township === '示例小区2'}
-                onCheckedChange={(checked) => 
-                  updateFilter('township', checked ? '示例小区2' : null)
-                }
-              />
-              <label htmlFor="township-sample2" className="text-sm">示例小区2</label>
-            </div>
+          <div className="space-y-1 max-h-40 overflow-y-auto">
+            {uniqueCommunities.length > 0 ? (
+              uniqueCommunities.map((community) => (
+                <div key={community} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`community-${community}`}
+                    checked={filters.township === community}
+                    onCheckedChange={(checked) => 
+                      updateFilter('township', checked ? community : null)
+                    }
+                  />
+                  <label htmlFor={`community-${community}`} className="text-sm">
+                    {community}
+                  </label>
+                </div>
+              ))
+            ) : (
+              <div className="text-sm text-muted-foreground">暂无小区数据</div>
+            )}
           </div>
         </div>
 

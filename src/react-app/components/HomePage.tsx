@@ -186,6 +186,7 @@ export default function HomePage() {
           filters={filters}
           onFiltersChange={handleFiltersChange}
           onClearFilters={handleClearFilters}
+          houses={data?.data.data || []}
         />
       </div>
 
