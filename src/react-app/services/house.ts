@@ -121,7 +121,7 @@ export const filterHouses = (houses: House[], filters: FilterState): House[] => 
 
     // 房间类型筛选
     if (filters.typeName) {
-      if (house.typeName !== filters.typeName) {
+      if (String(house.typeName) !== filters.typeName) {
         return false
       }
     }
