@@ -7,7 +7,7 @@ interface HouseGridProps {
 
 export default function HouseGrid({ data }: HouseGridProps) {
   return (
-    <div className="flex-1 overflow-auto p-4">
+    <div className="h-full overflow-auto p-4">
       {data.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {data.map((house, index) => (

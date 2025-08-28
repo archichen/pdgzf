@@ -229,7 +229,7 @@ export default function HouseTable({ data, sorting, onSortingChange }: HouseTabl
   const houseData = table.getRowModel().rows
 
   return (
-    <div className="flex-1 min-h-0 rounded-md border flex flex-col overflow-hidden">
+    <div className="h-full rounded-md border flex flex-col overflow-hidden">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -252,7 +252,7 @@ export default function HouseTable({ data, sorting, onSortingChange }: HouseTabl
       {/* 虚拟化的表格体 */}
       <div 
         ref={tableContainerRef}
-        className="relative flex-1 overflow-auto"
+        className="relative flex-1 overflow-auto max-h-[calc(100vh-300px)]"
       >
         {houseData.length > 0 ? (
           <div

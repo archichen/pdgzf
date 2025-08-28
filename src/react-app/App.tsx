@@ -4,7 +4,7 @@ import HomePage from "@/components/HomePage"
 function App() {
   return (
     <Providers>
-      <div className="h-svh bg-background flex flex-col overflow-hidden">
+      <div className="min-h-screen bg-background">
         <HomePage />
       </div>
     </Providers>

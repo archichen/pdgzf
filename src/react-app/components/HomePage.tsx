@@ -96,8 +96,8 @@ export default function HomePage() {
   // 处理加载和错误状态
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6 flex flex-col h-full overflow-hidden">
-        <div className="flex items-center justify-center h-64">
+      <div className="container mx-auto p-6">
+        <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-lg">加载中...</div>
         </div>
       </div>
@@ -106,8 +106,8 @@ export default function HomePage() {
 
   if (error) {
     return (
-      <div className="container mx-auto p-6 flex flex-col h-full overflow-hidden">
-        <div className="flex items-center justify-center h-64">
+      <div className="container mx-auto p-6">
+        <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-lg text-red-600">加载失败: {error.message}</div>
         </div>
       </div>
@@ -118,7 +118,7 @@ export default function HomePage() {
   const totalCount = data?.data.totalCount || 0
 
   return (
-    <div className="container mx-auto p-6 flex flex-col h-full overflow-hidden">
+    <div className="container mx-auto p-6">
       <div className="mb-6 flex-shrink-0">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -140,7 +140,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0">
+      <div className="min-h-[calc(100vh-200px)]">
         {viewMode === "list" ? (
           <HouseTable
             data={houses}
