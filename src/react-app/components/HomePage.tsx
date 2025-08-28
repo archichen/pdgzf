@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useHouseList, type House, FilterState } from "@/services/house"
+import { useHouseList, type House, FilterState, filterHouses } from "@/services/house"
 import HouseTable from "@/components/HouseTable"
 import HouseGrid from "@/components/HouseGrid"
 import ViewToggle from "@/components/ViewToggle"
@@ -21,7 +21,13 @@ export default function HomePage() {
   })
 
   const { data, isLoading, error } = useHouseList({
-    where: filters,
+    where: {
+      keywords: "",
+      township: null,
+      projectId: null,
+      typeName: null,
+      rent: null,
+    },
     pageSize: 99999, // 获取所有数据
   })
 
@@ -75,10 +81,19 @@ export default function HomePage() {
     })
   }
 
-  // 获取排序后的数据
-  const getSortedHouses = () => {
-    const houses = data?.data.data || []
-    return viewMode === "card" ? sortHouses(houses, cardSortBy, cardSortOrder) : houses
+  // 获取筛选和排序后的数据
+  const getFilteredAndSortedHouses = () => {
+    const allHouses = data?.data.data || []
+    
+    // 先筛选
+    const filteredHouses = filterHouses(allHouses, filters)
+    
+    // 再排序
+    if (viewMode === "card") {
+      return sortHouses(filteredHouses, cardSortBy, cardSortOrder)
+    }
+    
+    return filteredHouses
   }
 
   // 列表视图排序处理函数
@@ -134,8 +149,9 @@ export default function HomePage() {
     )
   }
 
-  const houses = data?.data.data || []
   const totalCount = data?.data.totalCount || 0
+  const filteredAndSortedHouses = getFilteredAndSortedHouses()
+  const filteredCount = filteredAndSortedHouses.length
 
   return (
     <div className="container mx-auto p-6">
@@ -145,7 +161,7 @@ export default function HomePage() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold">房源列表</h1>
             <p className="text-muted-foreground mt-2">
-              共 {totalCount} 套可租房源
+              共 {totalCount} 套可租房源{filteredCount !== totalCount && `，筛选后 ${filteredCount} 套`}
             </p>
           </div>
           <div className="flex items-center space-x-3">
@@ -174,13 +190,13 @@ export default function HomePage() {
       <div className="min-h-[calc(100vh-200px)]">
         {viewMode === "list" ? (
           <HouseTable
-            data={houses}
+            data={filteredAndSortedHouses}
             sorting={sorting}
             onSortingChange={handleListSortChange}
           />
         ) : (
           <HouseGrid
-            data={getSortedHouses()}
+            data={filteredAndSortedHouses}
           />
         )}
       </div>

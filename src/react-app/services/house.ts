@@ -13,6 +13,7 @@ export interface House {
   queueCount: number
   queuePosition: number
   propertyName: string
+  typeName?: string
   areaInfo: {
     areaName: string
   }
@@ -96,6 +97,68 @@ export const getRoomTypeLabel = (typeName: string | null): string => {
 export const getRentRangeLabel = (rent: string | null): string => {
   const option = RENT_RANGE_OPTIONS.find(opt => opt.value === rent)
   return option ? option.label : '不限'
+}
+
+// 前端筛选函数
+export const filterHouses = (houses: House[], filters: FilterState): House[] => {
+  return houses.filter(house => {
+    // 关键词筛选（区域名、小区名、房源名称）
+    if (filters.keywords) {
+      const keyword = filters.keywords.toLowerCase()
+      const searchText = [
+        house.fullName,
+        house.address,
+        house.project?.name,
+        house.project?.regionName,
+        house.project?.townshipName,
+        house.areaInfo?.areaName
+      ].filter(Boolean).join(' ').toLowerCase()
+      
+      if (!searchText.includes(keyword)) {
+        return false
+      }
+    }
+
+    // 房间类型筛选
+    if (filters.typeName) {
+      if (house.typeName !== filters.typeName) {
+        return false
+      }
+    }
+
+    // 租金范围筛选
+    if (filters.rent) {
+      const rent = house.rent || 0
+      switch (filters.rent) {
+        case 'Below1000':
+          if (rent >= 1000) return false
+          break
+        case 'Between1000And1999':
+          if (rent < 1000 || rent > 1999) return false
+          break
+        case 'Between2000And2999':
+          if (rent < 2000 || rent > 2999) return false
+          break
+        case 'Between3000And3999':
+          if (rent < 3000 || rent > 3999) return false
+          break
+        case 'Between4000And4999':
+          if (rent < 4000 || rent > 4999) return false
+          break
+        case 'Between5000And5999':
+          if (rent < 5000 || rent > 5999) return false
+          break
+        case 'Between6000And6999':
+          if (rent < 6000 || rent > 6999) return false
+          break
+        case 'Between7000And8000':
+          if (rent < 7000 || rent > 8000) return false
+          break
+      }
+    }
+
+    return true
+  })
 }
 
 // 获取房源列表
