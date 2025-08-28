@@ -1,9 +1,3 @@
-import {
-  Table,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { type House, getRoomTypeLabel } from "@/services/house"
 import {
   useReactTable,
@@ -15,7 +9,11 @@ import {
   Updater,
 } from "@tanstack/react-table"
 import { useRef } from "react"
-import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react"
+import {
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react"
 import {
   useVirtualizer,
 } from "@tanstack/react-virtual"
@@ -43,6 +41,7 @@ const columns: ColumnDef<House>[] = [
       <div className="font-medium flex items-center">{row.getValue("fullName")}</div>
     ),
     enableSorting: true,
+    size: 200,
   },
   {
     accessorKey: "address",
@@ -76,6 +75,7 @@ const columns: ColumnDef<House>[] = [
       )
     },
     enableSorting: true,
+    size: 200,
   },
   {
     accessorKey: "typeName",
@@ -109,6 +109,7 @@ const columns: ColumnDef<House>[] = [
       )
     },
     enableSorting: true,
+    size: 120,
   },
   {
     accessorKey: "area",
@@ -132,6 +133,7 @@ const columns: ColumnDef<House>[] = [
       return <div className="flex items-center">{area ? `${area}㎡` : "未知"}</div>
     },
     enableSorting: true,
+    size: 100,
   },
   {
     accessorKey: "rent",
@@ -155,6 +157,7 @@ const columns: ColumnDef<House>[] = [
       return <div className="flex items-center">{rent ? `¥${rent}` : "面议"}</div>
     },
     enableSorting: true,
+    size: 120,
   },
   {
     accessorKey: "queueCount",
@@ -179,6 +182,7 @@ const columns: ColumnDef<House>[] = [
       </div>
     ),
     enableSorting: true,
+    size: 120,
   },
   {
     accessorKey: "queuePosition",
@@ -203,6 +207,7 @@ const columns: ColumnDef<House>[] = [
       </div>
     ),
     enableSorting: true,
+    size: 120,
   },
 ]
 
@@ -226,14 +231,19 @@ export default function HouseTable({ data, sorting, onSortingChange }: HouseTabl
     state: {
       sorting,
     },
+    defaultColumn: {
+      minSize: 100,
+      size: 150,
+      maxSize: Number.MAX_SAFE_INTEGER,
+    },
   })
 
   // 创建虚拟化实例 - 必须在顶层调用
   const rowVirtualizer = useVirtualizer({
     count: table.getRowModel().rows.length,
     getScrollElement: () => tableContainerRef.current,
-    estimateSize: () => 60, // 调整每行高度到60px
-    overscan: 10, // 增加预渲染行数
+    estimateSize: () => 60,
+    overscan: 10,
   })
 
   const virtualRows = rowVirtualizer.getVirtualItems()
@@ -242,72 +252,91 @@ export default function HouseTable({ data, sorting, onSortingChange }: HouseTabl
 
   return (
     <div className="h-full rounded-md border flex flex-col overflow-hidden">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-      </Table>
-      
-      {/* 虚拟化的表格体 */}
       <div 
         ref={tableContainerRef}
         className="relative flex-1 overflow-auto max-h-[calc(100vh-300px)]"
       >
-        {houseData.length > 0 ? (
-          <div
-            style={{
-              height: `${totalSize}px`,
-              width: '100%',
-              position: 'relative',
-            }}
-          >
-            {virtualRows.map((virtualRow) => {
-              const row = houseData[virtualRow.index]
-              return (
-                <div
-                  key={row.id}
-                  className="absolute top-0 left-0 w-full flex items-center border-b bg-background hover:bg-muted/50"
-                  style={{
-                    height: `${virtualRow.size}px`,
-                    transform: `translateY(${virtualRow.start}px)`,
-                  }}
-                >
-                  <div className="flex w-full">
-                    {row.getVisibleCells().map((cell) => (
-                      <div
-                        key={cell.id}
-                        className="flex-1 px-4 py-2 text-sm"
-                        style={{ minWidth: cell.column.getSize() }}
+        <div className="w-full">
+          {/* 固定表头 */}
+          <div className="sticky top-0 z-10 bg-background border-b">
+            <table className="w-full">
+              <thead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id} className="border-b">
+                    {headerGroup.headers.map((header) => (
+                      <th 
+                        key={header.id}
+                        className="px-4 py-3 text-left text-sm font-medium text-muted-foreground whitespace-nowrap"
+                        style={{ 
+                          width: header.getSize(),
+                          minWidth: header.column.columnDef.minSize || 100
+                        }}
                       >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </div>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </th>
                     ))}
+                  </tr>
+                ))}
+              </thead>
+            </table>
+          </div>
+          
+          {/* 虚拟化的表格体 */}
+          {houseData.length > 0 ? (
+            <div
+              style={{
+                height: `${totalSize}px`,
+                width: '100%',
+                position: 'relative',
+              }}
+            >
+              {virtualRows.map((virtualRow) => {
+                const row = houseData[virtualRow.index]
+                return (
+                  <div
+                    key={row.id}
+                    className="absolute top-0 left-0 w-full flex items-center border-b bg-background hover:bg-muted/50"
+                    style={{
+                      height: `${virtualRow.size}px`,
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                  >
+                    <table className="w-full">
+                      <tbody>
+                        <tr>
+                          {row.getVisibleCells().map((cell) => (
+                            <td
+                              key={cell.id}
+                              className="px-4 py-2 text-sm align-middle"
+                              style={{ 
+                                width: cell.column.getSize(),
+                                minWidth: cell.column.columnDef.minSize || 100
+                              }}
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
-                </div>
-              )
-            })}
-          </div>
-        ) : (
-          <div className="text-center py-12 text-muted-foreground">
-            暂无数据
-          </div>
-        )}
+                )
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground">
+              暂无数据
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
