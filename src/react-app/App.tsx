@@ -1,11 +1,11 @@
 import { Providers } from "@/components/Providers"
-import HouseList from "@/components/HouseList"
+import HomePage from "@/components/HomePage"
 
 function App() {
   return (
     <Providers>
       <div className="h-svh bg-background flex flex-col overflow-hidden">
-        <HouseList />
+        <HomePage />
       </div>
     </Providers>
   )

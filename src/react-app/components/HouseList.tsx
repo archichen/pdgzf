@@ -4,7 +4,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useHouseList, type House } from "@/services/house"
+import { type House } from "@/services/house"
 import ViewToggle from "@/components/ViewToggle"
 import HouseCard from "@/components/HouseCard"
 import CardSortControls from "@/components/CardSortControls"
@@ -15,8 +15,9 @@ import {
   ColumnDef,
   flexRender,
   SortingState,
+  Updater,
 } from "@tanstack/react-table"
-import { useState, useRef } from "react"
+import { useRef } from "react"
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react"
 import {
   useVirtualizer,
@@ -196,94 +197,49 @@ const columns: ColumnDef<House>[] = [
   },
 ]
 
-export default function HouseList() {
-  const { data, isLoading, error } = useHouseList({
-    where: {
-      keywords: "",
-      township: null,
-      projectId: null,
-      typeName: null,
-      rent: null,
-    },
-    pageSize: 99999, // 获取所有数据
-  })
+interface HouseListProps {
+  data: House[]
+  totalCount: number
+  isLoading: boolean
+  error: Error | null
+  viewMode: "list" | "card"
+  sorting: SortingState
+  cardSortBy: string
+  cardSortOrder: "asc" | "desc"
+  sortedCardData: House[]
+  onViewModeChange: (mode: "list" | "card") => void
+  onListSortChange: (sorting: Updater<SortingState>) => void
+  onCardSortChange: (sortBy: string, sortOrder: "asc" | "desc") => void
+}
 
-  // 视图模式状态管理 - 移动端默认使用卡片视图
-  const [viewMode, setViewMode] = useState<"list" | "card">(() => {
-    // 检查是否为移动设备
-    if (typeof window !== 'undefined') {
-      return window.innerWidth < 768 ? "card" : "list"
-    }
-    return "list"
-  })
-
-  // 卡片视图排序状态管理
-  const [cardSortBy, setCardSortBy] = useState<string>("area")
-  const [cardSortOrder, setCardSortOrder] = useState<"asc" | "desc">("asc")
-
-  // 排序数据函数
-  const sortHouses = (houses: House[], sortBy: string, sortOrder: "asc" | "desc"): House[] => {
-    return [...houses].sort((a, b) => {
-      let aValue: any, bValue: any
-
-      switch (sortBy) {
-        case "area":
-          aValue = a.area ? parseFloat(a.area) : 0
-          bValue = b.area ? parseFloat(b.area) : 0
-          break
-        case "rent":
-          aValue = a.rent || 0
-          bValue = b.rent || 0
-          break
-        case "queueCount":
-          aValue = a.queueCount || 0
-          bValue = b.queueCount || 0
-          break
-        case "queuePosition":
-          aValue = a.queuePosition || Infinity
-          bValue = b.queuePosition || Infinity
-          break
-        default:
-          return 0
-      }
-
-      if (sortOrder === "asc") {
-        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
-      } else {
-        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0
-      }
-    })
-  }
-
-  // 获取排序后的数据
-  const getSortedHouses = () => {
-    const houses = data?.data.data || []
-    return viewMode === "card" ? sortHouses(houses, cardSortBy, cardSortOrder) : houses
-  }
-
-  // 排序状态管理 - 必须在顶层调用
-  const [sorting, setSorting] = useState<SortingState>([])
-  
+export default function HouseList({
+  data,
+  totalCount,
+  isLoading,
+  error,
+  viewMode,
+  sorting,
+  cardSortBy,
+  cardSortOrder,
+  sortedCardData,
+  onViewModeChange,
+  onListSortChange,
+  onCardSortChange,
+}: HouseListProps) {
   // 虚拟化容器引用 - 必须在顶层调用
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
   // 创建表格实例 - 必须在顶层调用
   const table = useReactTable({
-    data: data?.data.data || [],
+    data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setSorting,
+    onSortingChange: onListSortChange,
     state: {
       sorting,
     },
   })
-
-  // 卡片视图排序处理函数
-  const handleCardSortChange = (sortBy: string, sortOrder: "asc" | "desc") => {
-    setCardSortBy(sortBy)
-    setCardSortOrder(sortOrder)
-  }
 
   // 创建虚拟化实例 - 必须在顶层调用
   const rowVirtualizer = useVirtualizer({
@@ -314,7 +270,6 @@ export default function HouseList() {
   }
 
   const houseData = table.getRowModel().rows
-  const sortedCardData = getSortedHouses()
 
   return (
     <div className="container mx-auto p-6 flex flex-col h-full overflow-hidden">
@@ -323,7 +278,7 @@ export default function HouseList() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold">房源列表</h1>
             <p className="text-muted-foreground mt-2">
-              共 {data?.data.totalCount || 0} 套可租房源
+              共 {totalCount} 套可租房源
             </p>
           </div>
           <div className="flex items-center space-x-3">
@@ -331,10 +286,10 @@ export default function HouseList() {
               <CardSortControls
                 sortBy={cardSortBy}
                 sortOrder={cardSortOrder}
-                onSortChange={handleCardSortChange}
+                onSortChange={onCardSortChange}
               />
             )}
-            <ViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+            <ViewToggle viewMode={viewMode} onViewModeChange={onViewModeChange} />
           </div>
         </div>
       </div>
