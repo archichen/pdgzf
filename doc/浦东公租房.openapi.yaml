@@ -1,0 +1,2786 @@
+openapi: 3.0.1
+info:
+  title: 浦东公租房
+  description: ''
+  version: 1.0.0
+tags: []
+paths:
+  /api/v1.0/app/gzf/house/list:
+    post:
+      summary: 可租房源列表
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: ''
+          required: true
+          example: application/json
+          schema:
+            type: string
+        - name: DNT
+          in: header
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: string
+        - name: GZFAuthentication
+          in: header
+          description: ''
+          required: true
+          example: >-
+            eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiZDA1ZDNiMS05MDM1LTQ5ZTEtYjFiNi04MWI1MjhlMzU0ZmIiLCJpYXQiOjE3NTYyOTA2NjcsImV4cCI6MTc1NjM3NzA2N30.2ZALT4q35kmMWbfHIhmvl49YvQ4Ou94-n2pVm1GjQOY
+          schema:
+            type: string
+        - name: nonce
+          in: header
+          description: ''
+          required: true
+          example: 6KI974Y3MHQUABFOWNZ4WOHHGYVW7SVP
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: ''
+          required: true
+          example: WO2ZJ6AUJSWB62XIHNKB199NZ41WNIEY
+          schema:
+            type: string
+        - name: timestamp
+          in: header
+          description: ''
+          required: true
+          example: 68P9BX6L4K9V2B69OGLWHAT47WRI8J9V
+          schema:
+            type: string
+        - name: token
+          in: header
+          description: ''
+          required: true
+          example: 3f826856-b2d7-465a-b5c3-dcc3c1e8163e
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                where:
+                  type: object
+                  properties:
+                    keywords:
+                      type: 'null'
+                      title: 搜索关键词
+                    township:
+                      type: string
+                      title: 街道编码
+                      nullable: true
+                    projectId:
+                      type: integer
+                      title: 小区id
+                      nullable: true
+                    typeName:
+                      type: string
+                      title: 房型
+                      description: |-
+                        不限 null
+                        一室 1
+                        一室一厅 2
+                        二室 3
+                        二室一厅 4
+                        二室二厅 5
+                        三室 6
+                        三室一厅 7
+                        三室二厅 8
+                        四室 9
+                        五室 10
+                      nullable: true
+                    rent:
+                      type: string
+                      title: 价格区间
+                      description: |-
+                        不限 null
+                        1000以下 Below1000
+                        1000-1999 Between1000And1999
+                        2000-2999 Between2000And2999
+                        3000-3999 Between3000And3999
+                        4000-4999 Between4000And4999
+                        5000-5999 Between5000And5999
+                        6000-6999 Between6000And6999
+                        7000-8000 Between7000And8000
+                      nullable: true
+                  required:
+                    - keywords
+                    - township
+                    - projectId
+                    - typeName
+                    - rent
+                  title: 搜索条件
+                pageIndex:
+                  type: integer
+                  title: 翻页起始页下标
+                pageSize:
+                  type: integer
+                  title: 页面项目数量
+              required:
+                - where
+                - pageIndex
+                - pageSize
+            example:
+              where:
+                keywords: ''
+                township: null
+                projectId: null
+                typeName: null
+                rent: Between3000And3999
+              pageIndex: 0
+              pageSize: 10
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      totalCount:
+                        type: integer
+                        description: 可租房源数量
+                      pageCount:
+                        type: integer
+                        description: 翻页总页数
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              description: 房源id
+                            apiId:
+                              type: string
+                            pstructId:
+                              type: string
+                            name:
+                              type: string
+                              description: 房源名称（精确到室）
+                            regionName:
+                              type: string
+                              description: 区域名
+                            townshipName:
+                              type: string
+                              description: 街道名
+                              nullable: true
+                            province:
+                              type: string
+                              description: 省份编码
+                              nullable: true
+                            city:
+                              type: string
+                              description: 城市编码
+                              nullable: true
+                            region:
+                              type: string
+                              description: 地区编码
+                              nullable: true
+                            township:
+                              type: string
+                              description: 街道编码
+                              nullable: true
+                            area:
+                              type: object
+                              properties:
+                                id:
+                                  type: integer
+                                areaId:
+                                  type: string
+                                  description: 街道编码
+                                parentId:
+                                  type: string
+                                  description: 地区编码
+                                areaCode:
+                                  type: string
+                                  description: 街道编码
+                                areaName:
+                                  type: string
+                                  description: 街道名
+                              required:
+                                - id
+                                - areaId
+                                - parentId
+                                - areaCode
+                                - areaName
+                              description: 所属行政区信息
+                            address:
+                              type: string
+                              description: 小区地址
+                              nullable: true
+                            houseCount:
+                              type: integer
+                              description: 小区总房源数量
+                            rentableCount:
+                              type: integer
+                              description: 小区可租房源数量
+                            longitude:
+                              type: number
+                              description: 精度
+                            latitude:
+                              type: number
+                              description: 纬度
+                            memo:
+                              type: 'null'
+                            mainPic:
+                              type: 'null'
+                            createTime:
+                              type: string
+                              description: 房源信息创建时间
+                            updateTime:
+                              type: string
+                              description: 房源信息更新时间
+                            queueNotice:
+                              type: string
+                              description: 排队提醒
+                            images:
+                              type: 'null'
+                            followed:
+                              type: 'null'
+                          required:
+                            - id
+                            - apiId
+                            - pstructId
+                            - name
+                            - regionName
+                            - townshipName
+                            - province
+                            - city
+                            - region
+                            - township
+                            - area
+                            - address
+                            - houseCount
+                            - rentableCount
+                            - longitude
+                            - latitude
+                            - memo
+                            - mainPic
+                            - createTime
+                            - updateTime
+                            - queueNotice
+                            - images
+                            - followed
+                        description: 房源列表
+                    required:
+                      - totalCount
+                      - pageCount
+                      - data
+                  code:
+                    type: 'null'
+                    description: 响应状态码
+                  message:
+                    type: string
+                    description: 响应消息
+                  success:
+                    type: boolean
+                    description: 响应是否成功
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    description: 相应报错消息
+                  properties:
+                    type: 'null'
+                required:
+                  - data
+                  - code
+                  - message
+                  - success
+                  - errors
+                  - properties
+              examples:
+                '1':
+                  summary: 成功示例
+                  value:
+                    data:
+                      totalCount: 33
+                      pageCount: 4
+                      data:
+                        - id: 1167914
+                          apiId: 18514546-873b-43cb-bc93-141e41b1390d
+                          pstructId: 6e83694c-0479-453f-be2c-dbb334ab60d9
+                          name: 杜鹃路188弄（花木星辰苑）
+                          regionName: 浦东新区
+                          townshipName: 花木街道
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115016'
+                          area:
+                            id: 8290
+                            areaId: '310115016'
+                            parentId: '310115'
+                            areaCode: '310115016'
+                            areaName: 花木街道
+                          address: 杜鹃路188弄
+                          houseCount: 1
+                          rentableCount: 1
+                          longitude: 121.556598
+                          latitude: 31.208649
+                          memo: null
+                          mainPic: null
+                          createTime: '2024-11-25 01:00:02'
+                          updateTime: '2025-08-28 01:00:04'
+                          queueNotice: >-
+                            本小区20250811001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250320001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250217001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+                          images: null
+                          followed: null
+                        - id: 1132209
+                          apiId: bbf2e07f-72f5-4882-9991-47327f0102e6
+                          pstructId: 6a678f67-eab5-4b3a-aaa6-e88f272ecb52
+                          name: 启帆路199弄（星耀名邸）
+                          regionName: 浦东新区
+                          townshipName: 高行镇
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115121'
+                          area:
+                            id: 8298
+                            areaId: '310115121'
+                            parentId: '310115'
+                            areaCode: '310115121'
+                            areaName: 高行镇
+                          address: 启帆路199弄
+                          houseCount: 150
+                          rentableCount: 1
+                          longitude: 121.587721
+                          latitude: 31.320576
+                          memo: null
+                          mainPic: null
+                          createTime: '2024-09-27 01:00:02'
+                          updateTime: '2025-08-28 01:01:05'
+                          queueNotice: >-
+                            本小区20241128001周期共提供可选房源1套，参与本小区轮候选房人数共18人，共选中1套房，选中率100.00%。
+
+                            本小区20241114001周期共提供可选房源20套，参与本小区轮候选房人数共544人，共选中1套房，选中率5.00%。
+                          images: null
+                          followed: null
+                        - id: 1096397
+                          apiId: b8b79ad0-7780-4b46-b45c-178d9768de6c
+                          pstructId: eef4684e-8eeb-412d-97de-543e29d69c19
+                          name: 芳华路739弄（苗桐佳苑北区）
+                          regionName: 浦东新区
+                          townshipName: 花木街道
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115016'
+                          area:
+                            id: 8290
+                            areaId: '310115016'
+                            parentId: '310115'
+                            areaCode: '310115016'
+                            areaName: 花木街道
+                          address: 芳华路739弄
+                          houseCount: 60
+                          rentableCount: 3
+                          longitude: 121.571688
+                          latitude: 31.203759
+                          memo: null
+                          mainPic: null
+                          createTime: '2024-08-16 01:00:02'
+                          updateTime: '2025-08-28 09:35:00'
+                          queueNotice: >-
+                            本小区20250827001周期共提供可选房源3套，参与本小区轮候选房人数共1人，共选中1套房，选中率33.33%。
+
+                            本小区20250826001周期共提供可选房源4套，参与本小区轮候选房人数共1人，共选中1套房，选中率25.00%。
+
+                            本小区20250825001周期共提供可选房源5套，参与本小区轮候选房人数共5人，共选中1套房，选中率20.00%。
+                          images: null
+                          followed: null
+                        - id: 1096396
+                          apiId: b4f34497-481b-4366-b419-ed9ec5338aab
+                          pstructId: b74d3d50-d71e-4c81-85f4-d324ea3a779e
+                          name: 浦三路926弄（浦三锦苑）
+                          regionName: 浦东新区
+                          townshipName: 南码头路街道
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115010'
+                          area:
+                            id: 8284
+                            areaId: '310115010'
+                            parentId: '310115'
+                            areaCode: '310115010'
+                            areaName: 南码头路街道
+                          address: 浦三路926弄
+                          houseCount: 110
+                          rentableCount: 1
+                          longitude: 121.525795
+                          latitude: 31.186303
+                          memo: null
+                          mainPic: null
+                          createTime: '2024-08-16 01:00:01'
+                          updateTime: '2025-08-28 01:01:05'
+                          queueNotice: >-
+                            本小区20250518001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250425001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250422001周期共提供可选房源2套，参与本小区轮候选房人数共1人，共选中1套房，选中率50.00%。
+                          images: null
+                          followed: null
+                        - id: 883821
+                          apiId: 5f4a2dcb-6cc1-4e19-84c8-2603abcce8a2
+                          pstructId: 56aceea6-148b-4d97-8736-7d801af7a777
+                          name: 兰谷路2300弄（森兰名苑）
+                          regionName: 浦东新区
+                          townshipName: 高行镇
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115121'
+                          area:
+                            id: 8298
+                            areaId: '310115121'
+                            parentId: '310115'
+                            areaCode: '310115121'
+                            areaName: 高行镇
+                          address: null
+                          houseCount: 124
+                          rentableCount: 2
+                          longitude: 121.596987
+                          latitude: 31.298382
+                          memo: null
+                          mainPic: null
+                          createTime: '2023-10-08 01:00:04'
+                          updateTime: '2025-08-28 01:00:05'
+                          queueNotice: >-
+                            本小区20250818001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250810001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250614001周期共提供可选房源1套，参与本小区轮候选房人数共2人，共选中1套房，选中率100.00%。
+                          images: null
+                          followed: null
+                        - id: 883820
+                          apiId: 44a9a8c1-7b44-4797-9aa3-c6a4089aeec0
+                          pstructId: 1810d0ca-e395-447e-9ec1-6c492205a42c
+                          name: 张家浜路27号（嘉盈峰）
+                          regionName: 浦东新区
+                          townshipName: 塘桥街道
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115008'
+                          area:
+                            id: 8282
+                            areaId: '310115008'
+                            parentId: '310115'
+                            areaCode: '310115008'
+                            areaName: 塘桥街道
+                          address: null
+                          houseCount: 8
+                          rentableCount: 1
+                          longitude: 121.522772
+                          latitude: 31.221099
+                          memo: null
+                          mainPic: null
+                          createTime: '2023-10-08 01:00:04'
+                          updateTime: '2025-08-28 01:00:04'
+                          queueNotice: >-
+                            本小区20250803001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250730001周期共提供可选房源2套，参与本小区轮候选房人数共1人，共选中1套房，选中率50.00%。
+
+                            本小区20240419001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+                          images: null
+                          followed: null
+                        - id: 739711
+                          apiId: 736b0bb0-a6da-4623-92ad-4cddac6e9d3c
+                          pstructId: 64f52490-bac3-4eda-b4a6-41d3a8550b0f
+                          name: 庙港路188弄（申鸿苑）
+                          regionName: 浦东新区
+                          townshipName: 金桥镇
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115120'
+                          area:
+                            id: 8297
+                            areaId: '310115120'
+                            parentId: '310115'
+                            areaCode: '310115120'
+                            areaName: 金桥镇
+                          address: 庙港路188弄
+                          houseCount: 2168
+                          rentableCount: 2
+                          longitude: 121.645329
+                          latitude: 31.266482
+                          memo: null
+                          mainPic: null
+                          createTime: '2023-05-07 01:00:01'
+                          updateTime: '2025-08-28 01:00:05'
+                          queueNotice: >-
+                            本小区20250703001周期共提供可选房源1套，参与本小区轮候选房人数共106人，共选中1套房，选中率100.00%。
+
+                            本小区20250702001周期共提供可选房源1套，参与本小区轮候选房人数共55人，共选中1套房，选中率100.00%。
+
+                            本小区20250701001周期共提供可选房源2套，参与本小区轮候选房人数共104人，共选中1套房，选中率50.00%。
+                          images: null
+                          followed: null
+                        - id: 317562
+                          apiId: b6a4d868-c997-4722-8d46-ee5f8e18ea98
+                          pstructId: e9a25e5b-6359-42c1-8e83-de7d5f7c9a8f
+                          name: 民生路318弄(馨澜公寓)
+                          regionName: 浦东新区
+                          townshipName: null
+                          province: null
+                          city: null
+                          region: null
+                          township: null
+                          area: null
+                          address: null
+                          houseCount: 150
+                          rentableCount: 18
+                          longitude: 121.5473
+                          latitude: 31.245985
+                          memo: null
+                          mainPic: null
+                          createTime: '2021-11-17 01:00:01'
+                          updateTime: '2025-08-28 01:01:05'
+                          queueNotice: >-
+                            本小区20250822001周期共提供可选房源18套，参与本小区轮候选房人数共1人，共选中1套房，选中率5.56%。
+
+                            本小区20250820001周期共提供可选房源18套，参与本小区轮候选房人数共1人，共选中3套房，选中率16.67%。
+
+                            本小区20250816001周期共提供可选房源18套，参与本小区轮候选房人数共1人，共选中1套房，选中率5.56%。
+                          images: null
+                          followed: null
+                        - id: 124489
+                          apiId: bde6b290-e78c-41de-a3ee-225ee88f82d2
+                          pstructId: eeba1c8b-541a-4fbe-81ac-062a1a2c2662
+                          name: 杨辉路966弄（祥云华亭苑）
+                          regionName: 浦东新区
+                          townshipName: 新场镇
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115133'
+                          area:
+                            id: 8304
+                            areaId: '310115133'
+                            parentId: '310115'
+                            areaCode: '310115133'
+                            areaName: 新场镇
+                          address: 杨辉路966弄（祥云华亭苑）
+                          houseCount: 54
+                          rentableCount: 1
+                          longitude: 121.670862
+                          latitude: 31.03892
+                          memo: null
+                          mainPic: null
+                          createTime: '2020-09-09 01:00:09'
+                          updateTime: '2025-08-28 01:01:05'
+                          queueNotice: >-
+                            本小区20250826001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250820001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中3套房，选中率300.00%。
+
+                            本小区20250813001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中2套房，选中率200.00%。
+                          images: null
+                          followed: null
+                        - id: 8460
+                          apiId: EDCBF765-3D65-45B3-BC8D-0F52C9B570D6
+                          pstructId: 4B3F808B-077A-41E8-B071-486E7252E017
+                          name: 五莲路201弄
+                          regionName: 浦东新区
+                          townshipName: 陆家嘴街道
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115005'
+                          area:
+                            id: 8280
+                            areaId: '310115005'
+                            parentId: '310115'
+                            areaCode: '310115005'
+                            areaName: 陆家嘴街道
+                          address: 五莲路201弄
+                          houseCount: 1
+                          rentableCount: 1
+                          longitude: 121.587027
+                          latitude: 31.28206
+                          memo: null
+                          mainPic: null
+                          createTime: '2019-11-17 21:21:15'
+                          updateTime: '2025-08-28 09:35:00'
+                          queueNotice: >-
+                            本小区20250827001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250825001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250720001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+                          images: null
+                          followed: null
+                    code: null
+                    message: success
+                    success: true
+                    errors: []
+                    properties: null
+                '2':
+                  summary: 成功示例
+                  value:
+                    data:
+                      totalCount: 33
+                      pageCount: 4
+                      data:
+                        - id: 1167914
+                          apiId: 18514546-873b-43cb-bc93-141e41b1390d
+                          pstructId: 6e83694c-0479-453f-be2c-dbb334ab60d9
+                          name: 杜鹃路188弄（花木星辰苑）
+                          regionName: 浦东新区
+                          townshipName: 花木街道
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115016'
+                          area:
+                            id: 8290
+                            areaId: '310115016'
+                            parentId: '310115'
+                            areaCode: '310115016'
+                            areaName: 花木街道
+                          address: 杜鹃路188弄
+                          houseCount: 1
+                          rentableCount: 1
+                          longitude: 121.556598
+                          latitude: 31.208649
+                          memo: null
+                          mainPic: null
+                          createTime: '2024-11-25 01:00:02'
+                          updateTime: '2025-08-28 01:00:04'
+                          queueNotice: >-
+                            本小区20250811001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250320001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250217001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+                          images: null
+                          followed: null
+                        - id: 1132209
+                          apiId: bbf2e07f-72f5-4882-9991-47327f0102e6
+                          pstructId: 6a678f67-eab5-4b3a-aaa6-e88f272ecb52
+                          name: 启帆路199弄（星耀名邸）
+                          regionName: 浦东新区
+                          townshipName: 高行镇
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115121'
+                          area:
+                            id: 8298
+                            areaId: '310115121'
+                            parentId: '310115'
+                            areaCode: '310115121'
+                            areaName: 高行镇
+                          address: 启帆路199弄
+                          houseCount: 150
+                          rentableCount: 1
+                          longitude: 121.587721
+                          latitude: 31.320576
+                          memo: null
+                          mainPic: null
+                          createTime: '2024-09-27 01:00:02'
+                          updateTime: '2025-08-28 01:01:05'
+                          queueNotice: >-
+                            本小区20241128001周期共提供可选房源1套，参与本小区轮候选房人数共18人，共选中1套房，选中率100.00%。
+
+                            本小区20241114001周期共提供可选房源20套，参与本小区轮候选房人数共544人，共选中1套房，选中率5.00%。
+                          images: null
+                          followed: null
+                        - id: 1096397
+                          apiId: b8b79ad0-7780-4b46-b45c-178d9768de6c
+                          pstructId: eef4684e-8eeb-412d-97de-543e29d69c19
+                          name: 芳华路739弄（苗桐佳苑北区）
+                          regionName: 浦东新区
+                          townshipName: 花木街道
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115016'
+                          area:
+                            id: 8290
+                            areaId: '310115016'
+                            parentId: '310115'
+                            areaCode: '310115016'
+                            areaName: 花木街道
+                          address: 芳华路739弄
+                          houseCount: 60
+                          rentableCount: 3
+                          longitude: 121.571688
+                          latitude: 31.203759
+                          memo: null
+                          mainPic: null
+                          createTime: '2024-08-16 01:00:02'
+                          updateTime: '2025-08-28 09:35:00'
+                          queueNotice: >-
+                            本小区20250827001周期共提供可选房源3套，参与本小区轮候选房人数共1人，共选中1套房，选中率33.33%。
+
+                            本小区20250826001周期共提供可选房源4套，参与本小区轮候选房人数共1人，共选中1套房，选中率25.00%。
+
+                            本小区20250825001周期共提供可选房源5套，参与本小区轮候选房人数共5人，共选中1套房，选中率20.00%。
+                          images: null
+                          followed: null
+                        - id: 1096396
+                          apiId: b4f34497-481b-4366-b419-ed9ec5338aab
+                          pstructId: b74d3d50-d71e-4c81-85f4-d324ea3a779e
+                          name: 浦三路926弄（浦三锦苑）
+                          regionName: 浦东新区
+                          townshipName: 南码头路街道
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115010'
+                          area:
+                            id: 8284
+                            areaId: '310115010'
+                            parentId: '310115'
+                            areaCode: '310115010'
+                            areaName: 南码头路街道
+                          address: 浦三路926弄
+                          houseCount: 110
+                          rentableCount: 1
+                          longitude: 121.525795
+                          latitude: 31.186303
+                          memo: null
+                          mainPic: null
+                          createTime: '2024-08-16 01:00:01'
+                          updateTime: '2025-08-28 01:01:05'
+                          queueNotice: >-
+                            本小区20250518001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250425001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250422001周期共提供可选房源2套，参与本小区轮候选房人数共1人，共选中1套房，选中率50.00%。
+                          images: null
+                          followed: null
+                        - id: 883821
+                          apiId: 5f4a2dcb-6cc1-4e19-84c8-2603abcce8a2
+                          pstructId: 56aceea6-148b-4d97-8736-7d801af7a777
+                          name: 兰谷路2300弄（森兰名苑）
+                          regionName: 浦东新区
+                          townshipName: 高行镇
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115121'
+                          area:
+                            id: 8298
+                            areaId: '310115121'
+                            parentId: '310115'
+                            areaCode: '310115121'
+                            areaName: 高行镇
+                          address: null
+                          houseCount: 124
+                          rentableCount: 2
+                          longitude: 121.596987
+                          latitude: 31.298382
+                          memo: null
+                          mainPic: null
+                          createTime: '2023-10-08 01:00:04'
+                          updateTime: '2025-08-28 01:00:05'
+                          queueNotice: >-
+                            本小区20250818001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250810001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250614001周期共提供可选房源1套，参与本小区轮候选房人数共2人，共选中1套房，选中率100.00%。
+                          images: null
+                          followed: null
+                        - id: 883820
+                          apiId: 44a9a8c1-7b44-4797-9aa3-c6a4089aeec0
+                          pstructId: 1810d0ca-e395-447e-9ec1-6c492205a42c
+                          name: 张家浜路27号（嘉盈峰）
+                          regionName: 浦东新区
+                          townshipName: 塘桥街道
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115008'
+                          area:
+                            id: 8282
+                            areaId: '310115008'
+                            parentId: '310115'
+                            areaCode: '310115008'
+                            areaName: 塘桥街道
+                          address: null
+                          houseCount: 8
+                          rentableCount: 1
+                          longitude: 121.522772
+                          latitude: 31.221099
+                          memo: null
+                          mainPic: null
+                          createTime: '2023-10-08 01:00:04'
+                          updateTime: '2025-08-28 01:00:04'
+                          queueNotice: >-
+                            本小区20250803001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250730001周期共提供可选房源2套，参与本小区轮候选房人数共1人，共选中1套房，选中率50.00%。
+
+                            本小区20240419001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+                          images: null
+                          followed: null
+                        - id: 739711
+                          apiId: 736b0bb0-a6da-4623-92ad-4cddac6e9d3c
+                          pstructId: 64f52490-bac3-4eda-b4a6-41d3a8550b0f
+                          name: 庙港路188弄（申鸿苑）
+                          regionName: 浦东新区
+                          townshipName: 金桥镇
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115120'
+                          area:
+                            id: 8297
+                            areaId: '310115120'
+                            parentId: '310115'
+                            areaCode: '310115120'
+                            areaName: 金桥镇
+                          address: 庙港路188弄
+                          houseCount: 2168
+                          rentableCount: 2
+                          longitude: 121.645329
+                          latitude: 31.266482
+                          memo: null
+                          mainPic: null
+                          createTime: '2023-05-07 01:00:01'
+                          updateTime: '2025-08-28 01:00:05'
+                          queueNotice: >-
+                            本小区20250703001周期共提供可选房源1套，参与本小区轮候选房人数共106人，共选中1套房，选中率100.00%。
+
+                            本小区20250702001周期共提供可选房源1套，参与本小区轮候选房人数共55人，共选中1套房，选中率100.00%。
+
+                            本小区20250701001周期共提供可选房源2套，参与本小区轮候选房人数共104人，共选中1套房，选中率50.00%。
+                          images: null
+                          followed: null
+                        - id: 317562
+                          apiId: b6a4d868-c997-4722-8d46-ee5f8e18ea98
+                          pstructId: e9a25e5b-6359-42c1-8e83-de7d5f7c9a8f
+                          name: 民生路318弄(馨澜公寓)
+                          regionName: 浦东新区
+                          townshipName: null
+                          province: null
+                          city: null
+                          region: null
+                          township: null
+                          area: null
+                          address: null
+                          houseCount: 150
+                          rentableCount: 18
+                          longitude: 121.5473
+                          latitude: 31.245985
+                          memo: null
+                          mainPic: null
+                          createTime: '2021-11-17 01:00:01'
+                          updateTime: '2025-08-28 01:01:05'
+                          queueNotice: >-
+                            本小区20250822001周期共提供可选房源18套，参与本小区轮候选房人数共1人，共选中1套房，选中率5.56%。
+
+                            本小区20250820001周期共提供可选房源18套，参与本小区轮候选房人数共1人，共选中3套房，选中率16.67%。
+
+                            本小区20250816001周期共提供可选房源18套，参与本小区轮候选房人数共1人，共选中1套房，选中率5.56%。
+                          images: null
+                          followed: null
+                        - id: 124489
+                          apiId: bde6b290-e78c-41de-a3ee-225ee88f82d2
+                          pstructId: eeba1c8b-541a-4fbe-81ac-062a1a2c2662
+                          name: 杨辉路966弄（祥云华亭苑）
+                          regionName: 浦东新区
+                          townshipName: 新场镇
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115133'
+                          area:
+                            id: 8304
+                            areaId: '310115133'
+                            parentId: '310115'
+                            areaCode: '310115133'
+                            areaName: 新场镇
+                          address: 杨辉路966弄（祥云华亭苑）
+                          houseCount: 54
+                          rentableCount: 1
+                          longitude: 121.670862
+                          latitude: 31.03892
+                          memo: null
+                          mainPic: null
+                          createTime: '2020-09-09 01:00:09'
+                          updateTime: '2025-08-28 01:01:05'
+                          queueNotice: >-
+                            本小区20250826001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250820001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中3套房，选中率300.00%。
+
+                            本小区20250813001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中2套房，选中率200.00%。
+                          images: null
+                          followed: null
+                        - id: 8460
+                          apiId: EDCBF765-3D65-45B3-BC8D-0F52C9B570D6
+                          pstructId: 4B3F808B-077A-41E8-B071-486E7252E017
+                          name: 五莲路201弄
+                          regionName: 浦东新区
+                          townshipName: 陆家嘴街道
+                          province: '310000'
+                          city: '310100'
+                          region: '310115'
+                          township: '310115005'
+                          area:
+                            id: 8280
+                            areaId: '310115005'
+                            parentId: '310115'
+                            areaCode: '310115005'
+                            areaName: 陆家嘴街道
+                          address: 五莲路201弄
+                          houseCount: 1
+                          rentableCount: 1
+                          longitude: 121.587027
+                          latitude: 31.28206
+                          memo: null
+                          mainPic: null
+                          createTime: '2019-11-17 21:21:15'
+                          updateTime: '2025-08-28 09:35:00'
+                          queueNotice: >-
+                            本小区20250827001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250825001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+
+                            本小区20250720001周期共提供可选房源1套，参与本小区轮候选房人数共1人，共选中1套房，选中率100.00%。
+                          images: null
+                          followed: null
+                    code: null
+                    message: success
+                    success: true
+                    errors: []
+                    properties: null
+          headers: {}
+      security: []
+  /api/v1.0/app/gzf/house/740276:
+    get:
+      summary: 房源详情
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: DNT
+          in: header
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: string
+        - name: GZFAuthentication
+          in: header
+          description: ''
+          required: true
+          example: >-
+            eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiZDA1ZDNiMS05MDM1LTQ5ZTEtYjFiNi04MWI1MjhlMzU0ZmIiLCJpYXQiOjE3NTYyOTA2NjcsImV4cCI6MTc1NjM3NzA2N30.2ZALT4q35kmMWbfHIhmvl49YvQ4Ou94-n2pVm1GjQOY
+          schema:
+            type: string
+        - name: nonce
+          in: header
+          description: ''
+          required: true
+          example: DMDCJ3QJ4KNVYQ5VMPGLXEG9MVNTLGXQ
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: ''
+          required: true
+          example: IJVOPJ9DYB2HUGOROB8S8BOU9TWH1YWA
+          schema:
+            type: string
+        - name: timestamp
+          in: header
+          description: ''
+          required: true
+          example: XL8M9GTFWPYYRFG2U89U2ME1RTGFPVGV
+          schema:
+            type: string
+        - name: token
+          in: header
+          description: ''
+          required: true
+          example: 3f826856-b2d7-465a-b5c3-dcc3c1e8163e
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        title: 房源id
+                      apiId:
+                        type: string
+                      pstructId:
+                        type: string
+                      fullName:
+                        type: string
+                        title: 房源名称（精确到室）
+                      name:
+                        type: string
+                        title: 房间号
+                      floorName:
+                        type: string
+                        title: 楼层名
+                      toward:
+                        type: string
+                      propertyPstructId:
+                        type: string
+                      project:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            title: 小区id
+                          apiId:
+                            type: 'null'
+                          pstructId:
+                            type: 'null'
+                          name:
+                            type: string
+                            title: 小区名
+                          regionName:
+                            type: string
+                            title: 行政区名
+                          townshipName:
+                            type: string
+                            title: 街道名
+                          province:
+                            type: string
+                            title: 省份编码
+                          city:
+                            type: string
+                            title: 城市编码
+                          region:
+                            type: string
+                            title: 行政区编码
+                          township:
+                            type: string
+                            title: 街道编码
+                          area:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                              areaId:
+                                type: string
+                              parentId:
+                                type: string
+                              areaCode:
+                                type: string
+                              areaName:
+                                type: string
+                            required:
+                              - id
+                              - areaId
+                              - parentId
+                              - areaCode
+                              - areaName
+                            title: 地区信息
+                          address:
+                            type: string
+                            title: 小区地址
+                          houseCount:
+                            type: integer
+                            title: 总房源数量
+                          rentableCount:
+                            type: integer
+                            title: 可租房源数量
+                          longitude:
+                            type: number
+                            title: 经度
+                          latitude:
+                            type: number
+                            title: 纬度
+                          memo:
+                            type: 'null'
+                          mainPic:
+                            type: 'null'
+                          createTime:
+                            type: string
+                            title: 房源创建时间
+                          updateTime:
+                            type: string
+                            title: 房源更新时间
+                          queueNotice:
+                            type: string
+                            title: 排队提醒
+                          images:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                id:
+                                  type: integer
+                                project:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: integer
+                                    apiId:
+                                      type: string
+                                    pstructId:
+                                      type: string
+                                    name:
+                                      type: string
+                                  required:
+                                    - id
+                                    - apiId
+                                    - pstructId
+                                    - name
+                                image:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: integer
+                                    type:
+                                      type: string
+                                    name:
+                                      type: string
+                                    title:
+                                      type: 'null'
+                                    category:
+                                      type: string
+                                    extension:
+                                      type: string
+                                    duration:
+                                      type: 'null'
+                                    width:
+                                      type: integer
+                                    height:
+                                      type: integer
+                                    size:
+                                      type: integer
+                                    urls:
+                                      type: array
+                                      items:
+                                        type: string
+                                    thumbnails:
+                                      type: 'null'
+                                    createTime:
+                                      type: string
+                                    updateTime:
+                                      type: 'null'
+                                  required:
+                                    - id
+                                    - type
+                                    - name
+                                    - title
+                                    - category
+                                    - extension
+                                    - duration
+                                    - width
+                                    - height
+                                    - size
+                                    - urls
+                                    - thumbnails
+                                    - createTime
+                                    - updateTime
+                                createTime:
+                                  type: string
+                                updateTime:
+                                  type: string
+                              required:
+                                - id
+                                - project
+                                - image
+                                - createTime
+                                - updateTime
+                            title: 户型图
+                          followed:
+                            type: 'null'
+                        required:
+                          - id
+                          - apiId
+                          - pstructId
+                          - name
+                          - regionName
+                          - townshipName
+                          - province
+                          - city
+                          - region
+                          - township
+                          - area
+                          - address
+                          - houseCount
+                          - rentableCount
+                          - longitude
+                          - latitude
+                          - memo
+                          - mainPic
+                          - createTime
+                          - updateTime
+                          - queueNotice
+                          - images
+                          - followed
+                        title: 房源所属小区详情
+                      address:
+                        type: string
+                        title: 房源名称（精确到室）
+                      state:
+                        type: string
+                        title: 房源状态
+                      typeName:
+                        type: integer
+                        title: 户型类别
+                      splitedMark:
+                        type: integer
+                      splitedSex:
+                        type: integer
+                      rent:
+                        type: integer
+                        title: 租金
+                      area:
+                        type: string
+                        title: 房源面积
+                      emoveInDate:
+                        type: integer
+                        title: 起租日期
+                        description: 时间戳需要去掉末尾3个0
+                      secSpan:
+                        type: integer
+                      code:
+                        type: string
+                      productSetting:
+                        type: string
+                        title: 室内配套设施
+                      createTime:
+                        type: string
+                        title: 房源创建时间
+                      updateTime:
+                        type: string
+                        title: 房源更新时间
+                      queueCount:
+                        type: integer
+                        title: 排队数量
+                      images:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            houseApiId:
+                              type: string
+                            apiId:
+                              type: string
+                            typeid:
+                              type: integer
+                            minImg:
+                              type: string
+                            maxImg:
+                              type: string
+                          required:
+                            - id
+                            - houseApiId
+                            - apiId
+                            - typeid
+                            - minImg
+                            - maxImg
+                        title: 房源户型图信息
+                      selectStartTime:
+                        type: string
+                        title: 排队开始日期
+                      selectEndTime:
+                        type: string
+                        title: 排队结束日期
+                      mine:
+                        type: 'null'
+                      queue:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            period:
+                              type: 'null'
+                            house:
+                              type: 'null'
+                            project:
+                              type: 'null'
+                            serverAccountId:
+                              type: 'null'
+                            qualification:
+                              type: object
+                              properties:
+                                id:
+                                  type: integer
+                                dataId:
+                                  type: string
+                                name:
+                                  type: string
+                                  title: 姓名
+                                code:
+                                  type: string
+                                  title: 准入资格证
+                                startDate:
+                                  type: string
+                                  title: 资格证有效起始日期
+                                effectiveDate:
+                                  type: string
+                                  title: 资格证有效结束日期
+                                used:
+                                  type: boolean
+                                maxSelectableHouseType:
+                                  type: integer
+                                  title: 最大可选房型
+                                  description: 选房者可选择房型向下兼容
+                              required:
+                                - id
+                                - dataId
+                                - name
+                                - code
+                                - startDate
+                                - effectiveDate
+                                - used
+                                - maxSelectableHouseType
+                              title: 资质信息
+                            pstructId:
+                              type: string
+                            status:
+                              type: string
+                              title: 排队状态
+                            synced:
+                              type: boolean
+                            successTime:
+                              type: 'null'
+                            createTime:
+                              type: string
+                            updateTime:
+                              type: string
+                            cancelTime:
+                              type: 'null'
+                            position:
+                              type: integer
+                              title: 在队列中的排名
+                          required:
+                            - id
+                            - period
+                            - house
+                            - project
+                            - serverAccountId
+                            - qualification
+                            - pstructId
+                            - status
+                            - synced
+                            - successTime
+                            - createTime
+                            - updateTime
+                            - cancelTime
+                            - position
+                        title: 排队前三人员信息
+                      cancelMark:
+                        type: integer
+                      isSearchRoom:
+                        type: integer
+                      period:
+                        type: object
+                        properties:
+                          id:
+                            type: 'null'
+                          apiId:
+                            type: 'null'
+                          name:
+                            type: string
+                          startTime:
+                            type: string
+                          endTime:
+                            type: string
+                          hasStatistics:
+                            type: boolean
+                          enable:
+                            type: boolean
+                          createTime:
+                            type: string
+                          updateTime:
+                            type: string
+                        required:
+                          - id
+                          - apiId
+                          - name
+                          - startTime
+                          - endTime
+                          - hasStatistics
+                          - enable
+                          - createTime
+                          - updateTime
+                      systemTime:
+                        type: string
+                      periodStatusText:
+                        type: 'null'
+                      queuePosition:
+                        type: integer
+                        title: 预计在队列中的排名
+                      selectable:
+                        type: boolean
+                        title: 用户是否可选
+                      propertyName:
+                        type: string
+                    required:
+                      - id
+                      - apiId
+                      - pstructId
+                      - fullName
+                      - name
+                      - floorName
+                      - toward
+                      - propertyPstructId
+                      - project
+                      - address
+                      - state
+                      - typeName
+                      - splitedMark
+                      - splitedSex
+                      - rent
+                      - area
+                      - emoveInDate
+                      - secSpan
+                      - code
+                      - productSetting
+                      - createTime
+                      - updateTime
+                      - queueCount
+                      - images
+                      - selectStartTime
+                      - selectEndTime
+                      - mine
+                      - queue
+                      - cancelMark
+                      - isSearchRoom
+                      - period
+                      - systemTime
+                      - periodStatusText
+                      - queuePosition
+                      - selectable
+                      - propertyName
+                  code:
+                    type: 'null'
+                  message:
+                    type: string
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                  properties:
+                    type: 'null'
+                required:
+                  - data
+                  - code
+                  - message
+                  - success
+                  - errors
+                  - properties
+              examples:
+                '1':
+                  summary: 成功示例
+                  value:
+                    data:
+                      id: 740276
+                      apiId: 224BE754-E6C7-4A01-9B12-327EF3789B5A
+                      pstructId: 4533312A-677B-4B0B-A94C-97A499506936
+                      fullName: 庙港路188弄（申鸿苑）/20号/09楼/902
+                      name: '902'
+                      floorName: '09'
+                      toward: 朝南
+                      propertyPstructId: 64f52490-bac3-4eda-b4a6-41d3a8550b0f
+                      project:
+                        id: 739711
+                        apiId: null
+                        pstructId: null
+                        name: 庙港路188弄（申鸿苑）
+                        regionName: 浦东新区
+                        townshipName: 金桥镇
+                        province: '310000'
+                        city: '310100'
+                        region: '310115'
+                        township: '310115120'
+                        area:
+                          id: 8297
+                          areaId: '310115120'
+                          parentId: '310115'
+                          areaCode: '310115120'
+                          areaName: 金桥镇
+                        address: 庙港路188弄
+                        houseCount: 2168
+                        rentableCount: 2
+                        longitude: 121.645329
+                        latitude: 31.266482
+                        memo: null
+                        mainPic: null
+                        createTime: '2023-05-07 01:00:01'
+                        updateTime: '2025-08-28 01:00:05'
+                        queueNotice: >-
+                          本小区20250703001周期共提供可选房源1套，参与本小区轮候选房人数共106人，共选中1套房，选中率100.00%。
+
+                          本小区20250702001周期共提供可选房源1套，参与本小区轮候选房人数共55人，共选中1套房，选中率100.00%。
+
+                          本小区20250701001周期共提供可选房源2套，参与本小区轮候选房人数共104人，共选中1套房，选中率50.00%。
+                        images:
+                          - id: 12
+                            project:
+                              id: 739711
+                              apiId: 736b0bb0-a6da-4623-92ad-4cddac6e9d3c
+                              pstructId: 64f52490-bac3-4eda-b4a6-41d3a8550b0f
+                              name: 庙港路188弄（申鸿苑）
+                            image:
+                              id: 507490
+                              type: Image
+                              name: 楼栋图
+                              title: null
+                              category: Project
+                              extension: jpg
+                              duration: null
+                              width: 1
+                              height: 1
+                              size: 1
+                              urls:
+                                - https://obs.pdgzf.com/ShengHongYuan/floor.jpg
+                              thumbnails: null
+                              createTime: '2023-08-09 22:59:23'
+                              updateTime: null
+                            createTime: '2023-08-10 09:29:54'
+                            updateTime: '2023-08-10 09:29:54'
+                          - id: 13
+                            project:
+                              id: 739711
+                              apiId: 736b0bb0-a6da-4623-92ad-4cddac6e9d3c
+                              pstructId: 64f52490-bac3-4eda-b4a6-41d3a8550b0f
+                              name: 庙港路188弄（申鸿苑）
+                            image:
+                              id: 507491
+                              type: Image
+                              name: 平面图
+                              title: null
+                              category: Project
+                              extension: jpg
+                              duration: null
+                              width: 1
+                              height: 1
+                              size: 1
+                              urls:
+                                - >-
+                                  https://obs.pdgzf.com/ShengHongYuan/PinMian.png
+                              thumbnails: null
+                              createTime: '2023-08-09 22:59:37'
+                              updateTime: null
+                            createTime: '2023-08-10 09:29:58'
+                            updateTime: '2023-08-10 09:29:58'
+                          - id: 14
+                            project:
+                              id: 739711
+                              apiId: 736b0bb0-a6da-4623-92ad-4cddac6e9d3c
+                              pstructId: 64f52490-bac3-4eda-b4a6-41d3a8550b0f
+                              name: 庙港路188弄（申鸿苑）
+                            image:
+                              id: 507492
+                              type: Image
+                              name: 大门图
+                              title: null
+                              category: Project
+                              extension: jpg
+                              duration: null
+                              width: 1
+                              height: 1
+                              size: 1
+                              urls:
+                                - https://obs.pdgzf.com/ShengHongYuan/Door.jpg
+                              thumbnails: null
+                              createTime: '2023-08-09 22:59:48'
+                              updateTime: null
+                            createTime: '2023-08-10 09:30:01'
+                            updateTime: '2023-08-10 09:30:01'
+                        followed: null
+                      address: 庙港路188弄（申鸿苑）/20号/09楼/902
+                      state: Pending
+                      typeName: 1
+                      splitedMark: 0
+                      splitedSex: -1
+                      rent: 2350
+                      area: '44.67'
+                      emoveInDate: 1755792000000
+                      secSpan: 1756346400000
+                      code: 15120-103-188/20-50
+                      productSetting: 冰箱、洗衣机、油烟机、燃气灶、床、衣柜、空调等。
+                      createTime: '2023-05-07 01:00:47'
+                      updateTime: '2025-08-28 11:26:22'
+                      queueCount: 15
+                      images:
+                        - id: 687
+                          houseApiId: '224BE754-E6C7-4A01-9B12-327EF3789B5A    '
+                          apiId: '0CD1F196-0D13-4033-A659-3D96404B68D6    '
+                          typeid: 1
+                          minImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/ShenH_Min_D2.jpg                                                                                                                                                                                                           
+                          maxImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/ShenH_Max_D2.jpg                                                                                                                                                                                                           
+                        - id: 4547
+                          houseApiId: '224BE754-E6C7-4A01-9B12-327EF3789B5A    '
+                          apiId: '80FC4563-606E-4FD9-B1DF-23110ED59DF8    '
+                          typeid: 1
+                          minImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/RoomShiJPic/cesuo_min.jpg                                                                                                                                                                                                  
+                          maxImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/RoomShiJPic/cesuo_max.jpg                                                                                                                                                                                                  
+                        - id: 4548
+                          houseApiId: '224BE754-E6C7-4A01-9B12-327EF3789B5A    '
+                          apiId: 'ADEE2905-B112-446A-8DD2-C088F8B920E1    '
+                          typeid: 1
+                          minImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/RoomShiJPic/canting_min.jpg                                                                                                                                                                                                
+                          maxImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/RoomShiJPic/canting_max.jpg                                                                                                                                                                                                
+                        - id: 4549
+                          houseApiId: '224BE754-E6C7-4A01-9B12-327EF3789B5A    '
+                          apiId: '92F08A69-70CC-4734-A4C0-22BA07861FEC    '
+                          typeid: 1
+                          minImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/RoomShiJPic/cufang_min.jpg                                                                                                                                                                                                 
+                          maxImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/RoomShiJPic/cufang_max.jpg                                                                                                                                                                                                 
+                        - id: 4550
+                          houseApiId: '224BE754-E6C7-4A01-9B12-327EF3789B5A    '
+                          apiId: 'CE1D8794-3B28-4FB0-8CC6-C2B8EC7E06EE    '
+                          typeid: 1
+                          minImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/RoomShiJPic/woshi_min.jpg                                                                                                                                                                                                  
+                          maxImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/RoomShiJPic/woshi_max.jpg                                                                                                                                                                                                  
+                      selectStartTime: '2025-08-28 10:00:00'
+                      selectEndTime: '2025-08-29 09:30:00'
+                      mine: null
+                      queue:
+                        - id: 1315741
+                          period: null
+                          house: null
+                          project: null
+                          serverAccountId: null
+                          qualification:
+                            id: 1024231
+                            dataId: 07772d8f-0384-440b-830c-90898d63b15e
+                            name: 王*子
+                            code: '202417140005671'
+                            startDate: '2024-04-27'
+                            effectiveDate: '2026-04-26'
+                            used: false
+                            maxSelectableHouseType: 5
+                          pstructId: 4533312A-677B-4B0B-A94C-97A499506936
+                          status: Pending
+                          synced: true
+                          successTime: null
+                          createTime: '2025-08-28 11:15:24'
+                          updateTime: '2025-08-28 11:15:24'
+                          cancelTime: null
+                          position: 1
+                        - id: 1315746
+                          period: null
+                          house: null
+                          project: null
+                          serverAccountId: null
+                          qualification:
+                            id: 1093499
+                            dataId: B474A9FA-6453-4A39-A2CD-B169CDF91AAC
+                            name: 鲁*祺
+                            code: '202417140011285'
+                            startDate: '2024-08-12'
+                            effectiveDate: '2026-08-11'
+                            used: false
+                            maxSelectableHouseType: 10
+                          pstructId: 4533312A-677B-4B0B-A94C-97A499506936
+                          status: Pending
+                          synced: true
+                          successTime: null
+                          createTime: '2025-08-28 11:20:13'
+                          updateTime: '2025-08-28 11:20:13'
+                          cancelTime: null
+                          position: 2
+                        - id: 1315658
+                          period: null
+                          house: null
+                          project: null
+                          serverAccountId: null
+                          qualification:
+                            id: 1130013
+                            dataId: 1C209FA3-1FE2-4D1F-95A0-94458E41174E
+                            name: 王*钧
+                            code: '202417140013169'
+                            startDate: '2024-09-24'
+                            effectiveDate: '2026-09-23'
+                            used: false
+                            maxSelectableHouseType: 5
+                          pstructId: 4533312A-677B-4B0B-A94C-97A499506936
+                          status: Pending
+                          synced: true
+                          successTime: null
+                          createTime: '2025-08-28 10:08:41'
+                          updateTime: '2025-08-28 10:08:41'
+                          cancelTime: null
+                          position: 3
+                      cancelMark: 0
+                      isSearchRoom: 0
+                      period:
+                        id: null
+                        apiId: null
+                        name: '20250828001'
+                        startTime: '2025-08-28 10:00:00'
+                        endTime: '2025-08-29 09:30:00'
+                        hasStatistics: false
+                        enable: true
+                        createTime: '2025-08-28 09:30:21'
+                        updateTime: '2025-08-28 09:30:21'
+                      systemTime: '2025-08-28 11:29:40'
+                      periodStatusText: null
+                      queuePosition: 1
+                      selectable: true
+                      propertyName: 庙港路188弄（申鸿苑）
+                    code: null
+                    message: success
+                    success: true
+                    errors: []
+                    properties: null
+                '2':
+                  summary: 成功示例
+                  value:
+                    data:
+                      id: 740276
+                      apiId: 224BE754-E6C7-4A01-9B12-327EF3789B5A
+                      pstructId: 4533312A-677B-4B0B-A94C-97A499506936
+                      fullName: 庙港路188弄（申鸿苑）/20号/09楼/902
+                      name: '902'
+                      floorName: '09'
+                      toward: 朝南
+                      propertyPstructId: 64f52490-bac3-4eda-b4a6-41d3a8550b0f
+                      project:
+                        id: 739711
+                        apiId: null
+                        pstructId: null
+                        name: 庙港路188弄（申鸿苑）
+                        regionName: 浦东新区
+                        townshipName: 金桥镇
+                        province: '310000'
+                        city: '310100'
+                        region: '310115'
+                        township: '310115120'
+                        area:
+                          id: 8297
+                          areaId: '310115120'
+                          parentId: '310115'
+                          areaCode: '310115120'
+                          areaName: 金桥镇
+                        address: 庙港路188弄
+                        houseCount: 2168
+                        rentableCount: 2
+                        longitude: 121.645329
+                        latitude: 31.266482
+                        memo: null
+                        mainPic: null
+                        createTime: '2023-05-07 01:00:01'
+                        updateTime: '2025-08-28 01:00:05'
+                        queueNotice: >-
+                          本小区20250703001周期共提供可选房源1套，参与本小区轮候选房人数共106人，共选中1套房，选中率100.00%。
+
+                          本小区20250702001周期共提供可选房源1套，参与本小区轮候选房人数共55人，共选中1套房，选中率100.00%。
+
+                          本小区20250701001周期共提供可选房源2套，参与本小区轮候选房人数共104人，共选中1套房，选中率50.00%。
+                        images:
+                          - id: 12
+                            project:
+                              id: 739711
+                              apiId: 736b0bb0-a6da-4623-92ad-4cddac6e9d3c
+                              pstructId: 64f52490-bac3-4eda-b4a6-41d3a8550b0f
+                              name: 庙港路188弄（申鸿苑）
+                            image:
+                              id: 507490
+                              type: Image
+                              name: 楼栋图
+                              title: null
+                              category: Project
+                              extension: jpg
+                              duration: null
+                              width: 1
+                              height: 1
+                              size: 1
+                              urls:
+                                - https://obs.pdgzf.com/ShengHongYuan/floor.jpg
+                              thumbnails: null
+                              createTime: '2023-08-09 22:59:23'
+                              updateTime: null
+                            createTime: '2023-08-10 09:29:54'
+                            updateTime: '2023-08-10 09:29:54'
+                          - id: 13
+                            project:
+                              id: 739711
+                              apiId: 736b0bb0-a6da-4623-92ad-4cddac6e9d3c
+                              pstructId: 64f52490-bac3-4eda-b4a6-41d3a8550b0f
+                              name: 庙港路188弄（申鸿苑）
+                            image:
+                              id: 507491
+                              type: Image
+                              name: 平面图
+                              title: null
+                              category: Project
+                              extension: jpg
+                              duration: null
+                              width: 1
+                              height: 1
+                              size: 1
+                              urls:
+                                - >-
+                                  https://obs.pdgzf.com/ShengHongYuan/PinMian.png
+                              thumbnails: null
+                              createTime: '2023-08-09 22:59:37'
+                              updateTime: null
+                            createTime: '2023-08-10 09:29:58'
+                            updateTime: '2023-08-10 09:29:58'
+                          - id: 14
+                            project:
+                              id: 739711
+                              apiId: 736b0bb0-a6da-4623-92ad-4cddac6e9d3c
+                              pstructId: 64f52490-bac3-4eda-b4a6-41d3a8550b0f
+                              name: 庙港路188弄（申鸿苑）
+                            image:
+                              id: 507492
+                              type: Image
+                              name: 大门图
+                              title: null
+                              category: Project
+                              extension: jpg
+                              duration: null
+                              width: 1
+                              height: 1
+                              size: 1
+                              urls:
+                                - https://obs.pdgzf.com/ShengHongYuan/Door.jpg
+                              thumbnails: null
+                              createTime: '2023-08-09 22:59:48'
+                              updateTime: null
+                            createTime: '2023-08-10 09:30:01'
+                            updateTime: '2023-08-10 09:30:01'
+                        followed: null
+                      address: 庙港路188弄（申鸿苑）/20号/09楼/902
+                      state: Pending
+                      typeName: 1
+                      splitedMark: 0
+                      splitedSex: -1
+                      rent: 2350
+                      area: '44.67'
+                      emoveInDate: 1755792000000
+                      secSpan: 1756346400000
+                      code: 15120-103-188/20-50
+                      productSetting: 冰箱、洗衣机、油烟机、燃气灶、床、衣柜、空调等。
+                      createTime: '2023-05-07 01:00:47'
+                      updateTime: '2025-08-28 11:51:49'
+                      queueCount: 16
+                      images:
+                        - id: 687
+                          houseApiId: '224BE754-E6C7-4A01-9B12-327EF3789B5A    '
+                          apiId: '0CD1F196-0D13-4033-A659-3D96404B68D6    '
+                          typeid: 1
+                          minImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/ShenH_Min_D2.jpg                                                                                                                                                                                                           
+                          maxImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/ShenH_Max_D2.jpg                                                                                                                                                                                                           
+                        - id: 4547
+                          houseApiId: '224BE754-E6C7-4A01-9B12-327EF3789B5A    '
+                          apiId: '80FC4563-606E-4FD9-B1DF-23110ED59DF8    '
+                          typeid: 1
+                          minImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/RoomShiJPic/cesuo_min.jpg                                                                                                                                                                                                  
+                          maxImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/RoomShiJPic/cesuo_max.jpg                                                                                                                                                                                                  
+                        - id: 4548
+                          houseApiId: '224BE754-E6C7-4A01-9B12-327EF3789B5A    '
+                          apiId: 'ADEE2905-B112-446A-8DD2-C088F8B920E1    '
+                          typeid: 1
+                          minImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/RoomShiJPic/canting_min.jpg                                                                                                                                                                                                
+                          maxImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/RoomShiJPic/canting_max.jpg                                                                                                                                                                                                
+                        - id: 4549
+                          houseApiId: '224BE754-E6C7-4A01-9B12-327EF3789B5A    '
+                          apiId: '92F08A69-70CC-4734-A4C0-22BA07861FEC    '
+                          typeid: 1
+                          minImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/RoomShiJPic/cufang_min.jpg                                                                                                                                                                                                 
+                          maxImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/RoomShiJPic/cufang_max.jpg                                                                                                                                                                                                 
+                        - id: 4550
+                          houseApiId: '224BE754-E6C7-4A01-9B12-327EF3789B5A    '
+                          apiId: 'CE1D8794-3B28-4FB0-8CC6-C2B8EC7E06EE    '
+                          typeid: 1
+                          minImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/RoomShiJPic/woshi_min.jpg                                                                                                                                                                                                  
+                          maxImg: >-
+                            https://obs.pdgzf.com/ShengHongYuan/RoomShiJPic/woshi_max.jpg                                                                                                                                                                                                  
+                      selectStartTime: '2025-08-28 10:00:00'
+                      selectEndTime: '2025-08-29 09:30:00'
+                      mine: null
+                      queue:
+                        - id: 1315741
+                          period: null
+                          house: null
+                          project: null
+                          serverAccountId: null
+                          qualification:
+                            id: 1024231
+                            dataId: 07772d8f-0384-440b-830c-90898d63b15e
+                            name: 王*子
+                            code: '202417140005671'
+                            startDate: '2024-04-27'
+                            effectiveDate: '2026-04-26'
+                            used: false
+                            maxSelectableHouseType: 5
+                          pstructId: 4533312A-677B-4B0B-A94C-97A499506936
+                          status: Pending
+                          synced: true
+                          successTime: null
+                          createTime: '2025-08-28 11:15:24'
+                          updateTime: '2025-08-28 11:15:24'
+                          cancelTime: null
+                          position: 1
+                        - id: 1315746
+                          period: null
+                          house: null
+                          project: null
+                          serverAccountId: null
+                          qualification:
+                            id: 1093499
+                            dataId: B474A9FA-6453-4A39-A2CD-B169CDF91AAC
+                            name: 鲁*祺
+                            code: '202417140011285'
+                            startDate: '2024-08-12'
+                            effectiveDate: '2026-08-11'
+                            used: false
+                            maxSelectableHouseType: 10
+                          pstructId: 4533312A-677B-4B0B-A94C-97A499506936
+                          status: Pending
+                          synced: true
+                          successTime: null
+                          createTime: '2025-08-28 11:20:13'
+                          updateTime: '2025-08-28 11:20:13'
+                          cancelTime: null
+                          position: 2
+                        - id: 1315658
+                          period: null
+                          house: null
+                          project: null
+                          serverAccountId: null
+                          qualification:
+                            id: 1130013
+                            dataId: 1C209FA3-1FE2-4D1F-95A0-94458E41174E
+                            name: 王*钧
+                            code: '202417140013169'
+                            startDate: '2024-09-24'
+                            effectiveDate: '2026-09-23'
+                            used: false
+                            maxSelectableHouseType: 5
+                          pstructId: 4533312A-677B-4B0B-A94C-97A499506936
+                          status: Pending
+                          synced: true
+                          successTime: null
+                          createTime: '2025-08-28 10:08:41'
+                          updateTime: '2025-08-28 10:08:41'
+                          cancelTime: null
+                          position: 3
+                      cancelMark: 0
+                      isSearchRoom: 0
+                      period:
+                        id: null
+                        apiId: null
+                        name: '20250828001'
+                        startTime: '2025-08-28 10:00:00'
+                        endTime: '2025-08-29 09:30:00'
+                        hasStatistics: false
+                        enable: true
+                        createTime: '2025-08-28 09:30:21'
+                        updateTime: '2025-08-28 09:30:21'
+                      systemTime: '2025-08-28 11:59:38'
+                      periodStatusText: null
+                      queuePosition: 1
+                      selectable: true
+                      propertyName: 庙港路188弄（申鸿苑）
+                    code: null
+                    message: success
+                    success: true
+                    errors: []
+                    properties: null
+          headers: {}
+      security: []
+  /api/v1.0/app/gzf/area/list:
+    post:
+      summary: 区域列表
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: ''
+          required: true
+          example: application/json
+          schema:
+            type: string
+        - name: DNT
+          in: header
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: string
+        - name: GZFAuthentication
+          in: header
+          description: ''
+          required: true
+          example: >-
+            eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiZDA1ZDNiMS05MDM1LTQ5ZTEtYjFiNi04MWI1MjhlMzU0ZmIiLCJpYXQiOjE3NTYyOTA2NjcsImV4cCI6MTc1NjM3NzA2N30.2ZALT4q35kmMWbfHIhmvl49YvQ4Ou94-n2pVm1GjQOY
+          schema:
+            type: string
+        - name: nonce
+          in: header
+          description: ''
+          required: true
+          example: HD9IGB342OC9Q2Y4SN5WNF69REHLM6HX
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: ''
+          required: true
+          example: 6EYKVGS91L9HMMXXBVCKW56HKSNDHBIA
+          schema:
+            type: string
+        - name: timestamp
+          in: header
+          description: ''
+          required: true
+          example: A87DPY17AYZUJPJD59L3I7I3FWU6AMN4
+          schema:
+            type: string
+        - name: token
+          in: header
+          description: ''
+          required: true
+          example: 3f826856-b2d7-465a-b5c3-dcc3c1e8163e
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                where:
+                  type: object
+                  properties:
+                    parentId:
+                      type: string
+                    level:
+                      type: integer
+                  required:
+                    - parentId
+                    - level
+                pageIndex:
+                  type: integer
+                pageSize:
+                  type: integer
+                orderBy:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                  required:
+                    - id
+              required:
+                - where
+                - pageIndex
+                - pageSize
+                - orderBy
+            example:
+              where:
+                parentId: '310115'
+                level: 4
+              pageIndex: 0
+              pageSize: 999
+              orderBy:
+                id: ASC
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      totalCount:
+                        type: integer
+                      pageCount:
+                        type: integer
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            areaId:
+                              type: string
+                            parentId:
+                              type: string
+                            areaCode:
+                              type: string
+                            areaName:
+                              type: string
+                            fullPinYin:
+                              type: string
+                            shortPinyin:
+                              type: string
+                            level:
+                              type: integer
+                            sortCode:
+                              type: integer
+                            dataId:
+                              type: string
+                              nullable: true
+                            longitude:
+                              type: number
+                              nullable: true
+                            latitude:
+                              type: number
+                              nullable: true
+                            createTime:
+                              type: string
+                            updateTime:
+                              type: string
+                            description:
+                              type: 'null'
+                          required:
+                            - id
+                            - areaId
+                            - parentId
+                            - areaCode
+                            - areaName
+                            - fullPinYin
+                            - shortPinyin
+                            - level
+                            - sortCode
+                            - dataId
+                            - longitude
+                            - latitude
+                            - createTime
+                            - updateTime
+                            - description
+                    required:
+                      - totalCount
+                      - pageCount
+                      - data
+                  code:
+                    type: 'null'
+                  message:
+                    type: string
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items: {}
+                  properties:
+                    type: 'null'
+                required:
+                  - data
+                  - code
+                  - message
+                  - success
+                  - errors
+                  - properties
+              example:
+                data:
+                  totalCount: 30
+                  pageCount: 1
+                  data:
+                    - id: 8279
+                      areaId: '310115004'
+                      parentId: '310115'
+                      areaCode: '310115004'
+                      areaName: 潍坊新村街道
+                      fullPinYin: WeiFangXinCunJieDao
+                      shortPinyin: wfxcjd
+                      level: 4
+                      sortCode: 310115004
+                      dataId: weifang
+                      longitude: 121.53
+                      latitude: 31.23
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8280
+                      areaId: '310115005'
+                      parentId: '310115'
+                      areaCode: '310115005'
+                      areaName: 陆家嘴街道
+                      fullPinYin: LuJiaZuiJieDao
+                      shortPinyin: ljzjd
+                      level: 4
+                      sortCode: 310115005
+                      dataId: lujiazui
+                      longitude: 121.52
+                      latitude: 31.24
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8281
+                      areaId: '310115007'
+                      parentId: '310115'
+                      areaCode: '310115007'
+                      areaName: 周家渡街道
+                      fullPinYin: ZhouJiaDuJieDao
+                      shortPinyin: zjdjd
+                      level: 4
+                      sortCode: 310115007
+                      dataId: null
+                      longitude: null
+                      latitude: null
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8282
+                      areaId: '310115008'
+                      parentId: '310115'
+                      areaCode: '310115008'
+                      areaName: 塘桥街道
+                      fullPinYin: TangQiaoJieDao
+                      shortPinyin: tqjd
+                      level: 4
+                      sortCode: 310115008
+                      dataId: tangqiao
+                      longitude: 121.53
+                      latitude: 31.22
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8283
+                      areaId: '310115009'
+                      parentId: '310115'
+                      areaCode: '310115009'
+                      areaName: 上钢新村街道
+                      fullPinYin: ShangGangXinCunJieDao
+                      shortPinyin: sgxcjd
+                      level: 4
+                      sortCode: 310115009
+                      dataId: null
+                      longitude: 121.48961
+                      latitude: 31.177686
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8284
+                      areaId: '310115010'
+                      parentId: '310115'
+                      areaCode: '310115010'
+                      areaName: 南码头路街道
+                      fullPinYin: NanMaTouLuJieDao
+                      shortPinyin: nmtljd
+                      level: 4
+                      sortCode: 310115010
+                      dataId: nanmatou
+                      longitude: 121.52
+                      latitude: 31.2
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8285
+                      areaId: '310115011'
+                      parentId: '310115'
+                      areaCode: '310115011'
+                      areaName: 沪东新村街道
+                      fullPinYin: HuDongXinCunJieDao
+                      shortPinyin: hdxcjd
+                      level: 4
+                      sortCode: 310115011
+                      dataId: null
+                      longitude: null
+                      latitude: null
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8286
+                      areaId: '310115012'
+                      parentId: '310115'
+                      areaCode: '310115012'
+                      areaName: 金杨新村街道
+                      fullPinYin: JinYangXinCunJieDao
+                      shortPinyin: jyxcjd
+                      level: 4
+                      sortCode: 310115012
+                      dataId: jinyang
+                      longitude: 121.58
+                      latitude: 31.26
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8287
+                      areaId: '310115013'
+                      parentId: '310115'
+                      areaCode: '310115013'
+                      areaName: 洋泾街道
+                      fullPinYin: YangZuoJieDao
+                      shortPinyin: yjjd
+                      level: 4
+                      sortCode: 310115013
+                      dataId: yangjing
+                      longitude: 121.56
+                      latitude: 31.25
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8288
+                      areaId: '310115014'
+                      parentId: '310115'
+                      areaCode: '310115014'
+                      areaName: 浦兴路街道
+                      fullPinYin: PuXingLuJieDao
+                      shortPinyin: pxljd
+                      level: 4
+                      sortCode: 310115014
+                      dataId: null
+                      longitude: null
+                      latitude: null
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8289
+                      areaId: '310115015'
+                      parentId: '310115'
+                      areaCode: '310115015'
+                      areaName: 东明路街道
+                      fullPinYin: DongMingLuJieDao
+                      shortPinyin: dmljd
+                      level: 4
+                      sortCode: 310115015
+                      dataId: null
+                      longitude: null
+                      latitude: null
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8290
+                      areaId: '310115016'
+                      parentId: '310115'
+                      areaCode: '310115016'
+                      areaName: 花木街道
+                      fullPinYin: HuaMuJieDao
+                      shortPinyin: hmjd
+                      level: 4
+                      sortCode: 310115016
+                      dataId: huamu
+                      longitude: 121.56
+                      latitude: 31.22
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8291
+                      areaId: '310115103'
+                      parentId: '310115'
+                      areaCode: '310115103'
+                      areaName: 川沙新镇
+                      fullPinYin: ChuanShaXinZhen
+                      shortPinyin: csxz
+                      level: 4
+                      sortCode: 310115103
+                      dataId: chuansha
+                      longitude: 121.71
+                      latitude: 31.16
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8292
+                      areaId: '310115104'
+                      parentId: '310115'
+                      areaCode: '310115104'
+                      areaName: 高桥镇
+                      fullPinYin: GaoQiaoZhen
+                      shortPinyin: gqz
+                      level: 4
+                      sortCode: 310115104
+                      dataId: null
+                      longitude: null
+                      latitude: null
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8293
+                      areaId: '310115105'
+                      parentId: '310115'
+                      areaCode: '310115105'
+                      areaName: 北蔡镇
+                      fullPinYin: BeiCaiZhen
+                      shortPinyin: bcz
+                      level: 4
+                      sortCode: 310115105
+                      dataId: beicai
+                      longitude: 121.56
+                      latitude: 31.19
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8294
+                      areaId: '310115110'
+                      parentId: '310115'
+                      areaCode: '310115110'
+                      areaName: 合庆镇
+                      fullPinYin: HeQingZhen
+                      shortPinyin: hqz
+                      level: 4
+                      sortCode: 310115110
+                      dataId: geqing
+                      longitude: 121.73
+                      latitude: 31.24
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8295
+                      areaId: '310115114'
+                      parentId: '310115'
+                      areaCode: '310115114'
+                      areaName: 唐镇
+                      fullPinYin: TangZhen
+                      shortPinyin: tz
+                      level: 4
+                      sortCode: 310115114
+                      dataId: tangzhen
+                      longitude: 121.66
+                      latitude: 31.23
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8296
+                      areaId: '310115117'
+                      parentId: '310115'
+                      areaCode: '310115117'
+                      areaName: 曹路镇
+                      fullPinYin: CaoLuZhen
+                      shortPinyin: clz
+                      level: 4
+                      sortCode: 310115117
+                      dataId: caolu
+                      longitude: 121.69
+                      latitude: 31.28
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8297
+                      areaId: '310115120'
+                      parentId: '310115'
+                      areaCode: '310115120'
+                      areaName: 金桥镇
+                      fullPinYin: JinQiaoZhen
+                      shortPinyin: jqz
+                      level: 4
+                      sortCode: 310115120
+                      dataId: jinqiao
+                      longitude: 121.59
+                      latitude: 31.28
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8298
+                      areaId: '310115121'
+                      parentId: '310115'
+                      areaCode: '310115121'
+                      areaName: 高行镇
+                      fullPinYin: GaoXingZhen
+                      shortPinyin: gxz
+                      level: 4
+                      sortCode: 310115121
+                      dataId: gaohang
+                      longitude: 121.63
+                      latitude: 31.3
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8299
+                      areaId: '310115123'
+                      parentId: '310115'
+                      areaCode: '310115123'
+                      areaName: 高东镇
+                      fullPinYin: GaoDongZhen
+                      shortPinyin: gdz
+                      level: 4
+                      sortCode: 310115123
+                      dataId: gaodong
+                      longitude: 121.64
+                      latitude: 31.33
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8300
+                      areaId: '310115125'
+                      parentId: '310115'
+                      areaCode: '310115125'
+                      areaName: 张江镇
+                      fullPinYin: ZhangJiangZhen
+                      shortPinyin: zjz
+                      level: 4
+                      sortCode: 310115125
+                      dataId: zhangjiang
+                      longitude: 121.62
+                      latitude: 31.2
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8301
+                      areaId: '310115130'
+                      parentId: '310115'
+                      areaCode: '310115130'
+                      areaName: 三林镇
+                      fullPinYin: SanLinZhen
+                      shortPinyin: slz
+                      level: 4
+                      sortCode: 310115130
+                      dataId: sanlin
+                      longitude: 121.51
+                      latitude: 31.15
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8302
+                      areaId: '310115131'
+                      parentId: '310115'
+                      areaCode: '310115131'
+                      areaName: 惠南镇
+                      fullPinYin: HuiNanZhen
+                      shortPinyin: hnz
+                      level: 4
+                      sortCode: 310115131
+                      dataId: huinan
+                      longitude: 121.77
+                      latitude: 31.05
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8303
+                      areaId: '310115132'
+                      parentId: '310115'
+                      areaCode: '310115132'
+                      areaName: 周浦镇
+                      fullPinYin: ZhouPuZhen
+                      shortPinyin: zpz
+                      level: 4
+                      sortCode: 310115132
+                      dataId: zhoupu
+                      longitude: 121.61
+                      latitude: 31.11
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8304
+                      areaId: '310115133'
+                      parentId: '310115'
+                      areaCode: '310115133'
+                      areaName: 新场镇
+                      fullPinYin: XinChangZhen
+                      shortPinyin: xcz
+                      level: 4
+                      sortCode: 310115133
+                      dataId: xinchang
+                      longitude: 121.65
+                      latitude: 31.05
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8305
+                      areaId: '310115134'
+                      parentId: '310115'
+                      areaCode: '310115134'
+                      areaName: 大团镇
+                      fullPinYin: DaTuanZhen
+                      shortPinyin: dtz
+                      level: 4
+                      sortCode: 310115134
+                      dataId: datuanzhen
+                      longitude: 121.76
+                      latitude: 30.99
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8306
+                      areaId: '310115136'
+                      parentId: '310115'
+                      areaCode: '310115136'
+                      areaName: 康桥镇
+                      fullPinYin: KangQiaoZhen
+                      shortPinyin: kqz
+                      level: 4
+                      sortCode: 310115136
+                      dataId: kangqiao
+                      longitude: 121.61
+                      latitude: 31.15
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8307
+                      areaId: '310115137'
+                      parentId: '310115'
+                      areaCode: '310115137'
+                      areaName: 航头镇
+                      fullPinYin: HangTouZhen
+                      shortPinyin: htz
+                      level: 4
+                      sortCode: 310115137
+                      dataId: hangtou
+                      longitude: 121.6
+                      latitude: 31.04
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                    - id: 8308
+                      areaId: '310115139'
+                      parentId: '310115'
+                      areaCode: '310115139'
+                      areaName: 祝桥镇
+                      fullPinYin: ZhuQiaoZhen
+                      shortPinyin: zqz
+                      level: 4
+                      sortCode: 310115139
+                      dataId: zhuqiao
+                      longitude: 121.81
+                      latitude: 31.15
+                      createTime: '2025-08-28 01:00:02'
+                      updateTime: '2025-08-28 01:00:02'
+                      description: null
+                code: null
+                message: success
+                success: true
+                errors: []
+                properties: null
+          headers: {}
+      security: []
+  /api/v1.0/app/gzf/project/list:
+    post:
+      summary: 小区列表
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: ''
+          required: true
+          example: application/json
+          schema:
+            type: string
+        - name: DNT
+          in: header
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: string
+        - name: GZFAuthentication
+          in: header
+          description: ''
+          required: true
+          example: >-
+            eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiZDA1ZDNiMS05MDM1LTQ5ZTEtYjFiNi04MWI1MjhlMzU0ZmIiLCJpYXQiOjE3NTYyOTA2NjcsImV4cCI6MTc1NjM3NzA2N30.2ZALT4q35kmMWbfHIhmvl49YvQ4Ou94-n2pVm1GjQOY
+          schema:
+            type: string
+        - name: nonce
+          in: header
+          description: ''
+          required: true
+          example: AUXZNFF2OJGKHAQ1PICBDQUCCLU1CGPH
+          schema:
+            type: string
+        - name: signature
+          in: header
+          description: ''
+          required: true
+          example: ZUWJQXHGPBL3VGLYW4GLZI4688ZLTUQ4
+          schema:
+            type: string
+        - name: timestamp
+          in: header
+          description: ''
+          required: true
+          example: R9MSF4BU4QA23V7NNF1CCR2GO3HB9XF1
+          schema:
+            type: string
+        - name: token
+          in: header
+          description: ''
+          required: true
+          example: 3f826856-b2d7-465a-b5c3-dcc3c1e8163e
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                QueryJson:
+                  type: object
+                  properties:
+                    Type:
+                      type: integer
+                  required:
+                    - Type
+                pageSize:
+                  type: integer
+              required:
+                - QueryJson
+                - pageSize
+            example:
+              QueryJson:
+                Type: 1
+              pageSize: 100
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+          headers: {}
+      security: []
+components:
+  schemas: {}
+  securitySchemes: {}
+servers:
+  - url: https://select.pdgzf.com
+    description: 正式环境
+security: []
