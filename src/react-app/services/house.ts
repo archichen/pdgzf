@@ -1,4 +1,4 @@
-import { useQuery, useInfiniteQuery } from '@tanstack/react-query'
+import { useQuery, useInfiniteQuery, QueryClient } from '@tanstack/react-query'
 
 // 房源数据类型定义
 export interface House {
@@ -203,7 +203,13 @@ export const useHouseList = (params: Omit<HouseListParams, 'pageIndex'>) => {
       pageIndex: 0,
       pageSize: 99999, // 获取所有数据
     }),
-    staleTime: 5 * 60 * 1000, // 5分钟
+    staleTime: 30 * 60 * 1000, // 30分钟内数据视为新鲜
+    gcTime: 60 * 60 * 1000, // 60分钟后垃圾回收
+    retry: 2, // 失败重试2次
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // 指数退避重试
+    refetchOnWindowFocus: false, // 窗口聚焦时不重新获取
+    refetchOnMount: false, // 组件挂载时不重新获取（如果已有缓存）
+    refetchOnReconnect: false, // 重新连接时不重新获取
   })
 }
 
@@ -230,6 +236,24 @@ export const useInfiniteHouseList = (params: Omit<HouseListParams, 'pageIndex'>)
       return undefined
     },
     initialPageParam: 0,
-    staleTime: 5 * 60 * 1000, // 5分钟
+    staleTime: 30 * 60 * 1000, // 30分钟
+    gcTime: 60 * 60 * 1000, // 60分钟
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   })
 }
+
+// 创建QueryClient实例
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30 * 60 * 1000, // 默认30分钟
+      gcTime: 60 * 60 * 1000, // 默认60分钟
+      retry: 2,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+    },
+  },
+})

@@ -1,14 +1,17 @@
 import { useState } from "react"
+import { Button } from "@/components/ui/button"
 import { useHouseList, type House, FilterState, filterHouses } from "@/services/house"
 import HouseTable from "@/components/HouseTable"
 import HouseGrid from "@/components/HouseGrid"
 import ViewToggle from "@/components/ViewToggle"
 import CardSortControls from "@/components/CardSortControls"
-import FilterControls from "@/components/FilterControls"
+import FilterModal from "@/components/FilterModal"
+import FilterBadges from "@/components/FilterBadges"
 import {
   SortingState,
   Updater,
 } from "@tanstack/react-table"
+import { RefreshCw, Filter } from "lucide-react"
 
 export default function HomePage() {
   // 筛选条件状态管理
@@ -21,7 +24,7 @@ export default function HomePage() {
     rents: [],
   })
 
-  const { data, isLoading, error } = useHouseList({
+  const { data, isLoading, error, refetch } = useHouseList({
     where: {
       keywords: "",
       region: null,
@@ -41,6 +44,19 @@ export default function HomePage() {
     }
     return "list"
   })
+
+  // 刷新状态管理
+  const [isRefreshing, setIsRefreshing] = useState(false)
+
+  // 手动刷新数据
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    try {
+      await refetch()
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
 
   // 列表视图排序状态管理
   const [sorting, setSorting] = useState<SortingState>([])
@@ -126,6 +142,44 @@ export default function HomePage() {
     })
   }
 
+  // 移除单个筛选条件
+  const handleRemoveFilter = (filterType: keyof FilterState, value?: any) => {
+    setFilters(prev => {
+      const newFilters = { ...prev }
+      
+      switch (filterType) {
+        case 'keywords':
+          newFilters.keywords = ""
+          break
+        case 'region':
+          newFilters.region = null
+          break
+        case 'township':
+          newFilters.township = null
+          break
+        case 'projectId':
+          newFilters.projectId = null
+          break
+        case 'typeNames':
+          if (value !== undefined) {
+            newFilters.typeNames = prev.typeNames.filter(t => t !== value)
+          } else {
+            newFilters.typeNames = []
+          }
+          break
+        case 'rents':
+          if (value !== undefined) {
+            newFilters.rents = prev.rents.filter(r => r !== value)
+          } else {
+            newFilters.rents = []
+          }
+          break
+      }
+      
+      return newFilters
+    })
+  }
+
   // 视图模式切换处理函数
   const handleViewModeChange = (mode: "list" | "card") => {
     setViewMode(mode)
@@ -175,20 +229,38 @@ export default function HomePage() {
                 onSortChange={handleCardSortChange}
               />
             )}
+            <FilterModal
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              onClearFilters={handleClearFilters}
+              houses={data?.data.data || []}
+            >
+              <Button variant="outline" className="flex items-center space-x-2">
+                <Filter className="h-4 w-4" />
+                <span>筛选</span>
+              </Button>
+            </FilterModal>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              disabled={isRefreshing || isLoading}
+              className="flex items-center space-x-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <span>{isRefreshing ? '刷新中...' : '刷新'}</span>
+            </Button>
             <ViewToggle viewMode={viewMode} onViewModeChange={handleViewModeChange} />
           </div>
         </div>
       </div>
 
-      {/* 筛选控件 */}
-      <div className="mb-6 p-4 bg-muted/30 rounded-lg border">
-        <FilterControls
-          filters={filters}
-          onFiltersChange={handleFiltersChange}
-          onClearFilters={handleClearFilters}
-          houses={data?.data.data || []}
-        />
-      </div>
+      {/* 筛选条件badge */}
+      <FilterBadges
+        filters={filters}
+        onRemoveFilter={handleRemoveFilter}
+        onClearAllFilters={handleClearFilters}
+      />
 
       {/* 房源列表 */}
       <div className="min-h-[calc(100vh-200px)]">
