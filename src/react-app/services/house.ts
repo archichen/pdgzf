@@ -88,8 +88,8 @@ export const RENT_RANGE_OPTIONS = [
 ]
 
 // 获取房间类型显示名称
-export const getRoomTypeLabel = (typeName: string | null): string => {
-  const option = ROOM_TYPE_OPTIONS.find(opt => opt.value === typeName)
+export const getRoomTypeLabel = (typeName: string | number | null): string => {
+  const option = ROOM_TYPE_OPTIONS.find(opt => String(opt.value) === String(typeName))
   return option ? option.label : '不限'
 }
 

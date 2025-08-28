@@ -4,7 +4,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { type House } from "@/services/house"
+import { type House, getRoomTypeLabel } from "@/services/house"
 import {
   useReactTable,
   getCoreRowModel,
@@ -40,7 +40,7 @@ const columns: ColumnDef<House>[] = [
       </div>
     ),
     cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("fullName")}</div>
+      <div className="font-medium flex items-center">{row.getValue("fullName")}</div>
     ),
     enableSorting: true,
   },
@@ -65,24 +65,26 @@ const columns: ColumnDef<House>[] = [
       const townshipName = row.original.project?.townshipName
       const address = row.getValue("address") as string
       return (
-        <div>
-          <div className="font-medium">{townshipName || "未知地点"}</div>
-          {address && (
-            <div className="text-sm text-muted-foreground">{address}</div>
-          )}
+        <div className="flex items-center">
+          <div>
+            <div className="font-medium">{townshipName || "未知地点"}</div>
+            {address && (
+              <div className="text-sm text-muted-foreground">{address}</div>
+            )}
+          </div>
         </div>
       )
     },
     enableSorting: true,
   },
   {
-    accessorKey: "orientation",
+    accessorKey: "typeName",
     header: ({ column }) => (
       <div
         className="flex items-center cursor-pointer hover:bg-muted/50 p-2 rounded -m-2"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        朝向
+        房型
         {column.getIsSorted() === "asc" ? (
           <ArrowUp className="ml-2 h-4 w-4" />
         ) : column.getIsSorted() === "desc" ? (
@@ -93,8 +95,18 @@ const columns: ColumnDef<House>[] = [
       </div>
     ),
     cell: ({ row }) => {
-      const orientation = row.getValue("orientation") as string | undefined
-      return <div>{orientation || "未知"}</div>
+      const typeName = row.original.typeName
+      return (
+        <div className="flex items-center">
+          {typeName ? (
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+              {getRoomTypeLabel(typeName)}
+            </span>
+          ) : (
+            <span className="text-muted-foreground">不限</span>
+          )}
+        </div>
+      )
     },
     enableSorting: true,
   },
@@ -117,7 +129,7 @@ const columns: ColumnDef<House>[] = [
     ),
     cell: ({ row }) => {
       const area = row.getValue("area") as string | undefined
-      return <div>{area ? `${area}㎡` : "未知"}</div>
+      return <div className="flex items-center">{area ? `${area}㎡` : "未知"}</div>
     },
     enableSorting: true,
   },
@@ -140,7 +152,7 @@ const columns: ColumnDef<House>[] = [
     ),
     cell: ({ row }) => {
       const rent = row.getValue("rent") as number | undefined
-      return <div>{rent ? `¥${rent}` : "面议"}</div>
+      return <div className="flex items-center">{rent ? `¥${rent}` : "面议"}</div>
     },
     enableSorting: true,
   },
@@ -162,7 +174,7 @@ const columns: ColumnDef<House>[] = [
       </div>
     ),
     cell: ({ row }) => (
-      <div className="text-center">
+      <div className="text-center flex items-center justify-center">
         {row.getValue("queueCount")}
       </div>
     ),
@@ -186,7 +198,7 @@ const columns: ColumnDef<House>[] = [
       </div>
     ),
     cell: ({ row }) => (
-      <div className="text-center font-medium text-blue-600">
+      <div className="text-center font-medium text-blue-600 flex items-center justify-center">
         {row.getValue("queuePosition")}
       </div>
     ),
@@ -220,7 +232,7 @@ export default function HouseTable({ data, sorting, onSortingChange }: HouseTabl
   const rowVirtualizer = useVirtualizer({
     count: table.getRowModel().rows.length,
     getScrollElement: () => tableContainerRef.current,
-    estimateSize: () => 72, // 增加每行高度到72px
+    estimateSize: () => 60, // 调整每行高度到60px
     overscan: 10, // 增加预渲染行数
   })
 
@@ -277,7 +289,7 @@ export default function HouseTable({ data, sorting, onSortingChange }: HouseTabl
                     {row.getVisibleCells().map((cell) => (
                       <div
                         key={cell.id}
-                        className="flex-1 px-4 py-3 text-sm"
+                        className="flex-1 px-4 py-2 text-sm"
                         style={{ minWidth: cell.column.getSize() }}
                       >
                         {flexRender(

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { type House } from "@/services/house"
-import { Home, MapPin, DollarSign, TrendingUp } from "lucide-react"
+import { type House, getRoomTypeLabel } from "@/services/house"
+import { Home, MapPin, DollarSign, TrendingUp, DoorOpen } from "lucide-react"
 
 interface HouseCardProps {
   house: House
@@ -26,6 +26,12 @@ export default function HouseCard({ house }: HouseCardProps) {
             {house.area && (
               <Badge variant="outline" className="text-xs">
                 {house.area}㎡
+              </Badge>
+            )}
+            {house.typeName && (
+              <Badge variant="default" className="text-xs">
+                <DoorOpen className="h-3 w-3 mr-1" />
+                {getRoomTypeLabel(house.typeName)}
               </Badge>
             )}
           </div>
