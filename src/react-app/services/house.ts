@@ -120,6 +120,20 @@ export const filterHouses = (houses: House[], filters: FilterState): House[] => 
       }
     }
 
+    // 区域筛选（从townshipName字段匹配）
+    if (filters.region) {
+      if (!house.project?.townshipName || house.project.townshipName !== filters.region) {
+        return false
+      }
+    }
+
+    // 小区筛选（从project.name字段匹配）
+    if (filters.township) {
+      if (!house.project?.name || house.project.name !== filters.township) {
+        return false
+      }
+    }
+
     // 房间类型筛选（多选）
     if (filters.typeNames.length > 0) {
       if (!house.typeName || !filters.typeNames.includes(String(house.typeName))) {
