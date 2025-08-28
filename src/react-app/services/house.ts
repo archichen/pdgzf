@@ -42,17 +42,60 @@ export interface HouseListResponse {
   message: string
 }
 
+// 筛选条件类型
+export interface FilterState {
+  keywords: string
+  township: string | null
+  projectId: number | null
+  typeName: string | null
+  rent: string | null
+}
+
 // 请求参数类型
 export interface HouseListParams {
-  where?: {
-    keywords?: string | null
-    township?: string | null
-    projectId?: number | null
-    typeName?: string | null
-    rent?: string | null
-  }
+  where?: FilterState
   pageIndex: number
   pageSize: number
+}
+
+// 房间类型选项
+export const ROOM_TYPE_OPTIONS = [
+  { value: null, label: '不限' },
+  { value: '1', label: '一室' },
+  { value: '2', label: '一室一厅' },
+  { value: '3', label: '二室' },
+  { value: '4', label: '二室一厅' },
+  { value: '5', label: '二室二厅' },
+  { value: '6', label: '三室' },
+  { value: '7', label: '三室一厅' },
+  { value: '8', label: '三室二厅' },
+  { value: '9', label: '四室' },
+  { value: '10', label: '五室' },
+]
+
+// 租金范围选项
+export const RENT_RANGE_OPTIONS = [
+  { value: null, label: '不限' },
+  { value: 'Below1000', label: '1000以下' },
+  { value: 'Between1000And1999', label: '1000-1999' },
+  { value: 'Between2000And2999', label: '2000-2999' },
+  { value: 'Between3000And3999', label: '3000-3999' },
+  { value: 'Between4000And4999', label: '4000-4999' },
+  { value: 'Between5000And5999', label: '5000-5999' },
+  { value: 'Between6000And6999', label: '6000-6999' },
+  { value: 'Between7000And8000', label: '7000-8000' },
+]
+
+// 获取房间类型显示名称
+export const getRoomTypeLabel = (typeName: string | null): string => {
+  const option = ROOM_TYPE_OPTIONS.find(opt => opt.value === typeName)
+  return option ? option.label : '不限'
+}
+
+// 获取租金范围显示名称
+export const getRentRangeLabel = (rent: string | null): string => {
+  const option = RENT_RANGE_OPTIONS.find(opt => opt.value === rent)
+  return option ? option.label : '不限'
 }
 
 // 获取房源列表

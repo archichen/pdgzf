@@ -1,23 +1,27 @@
 import { useState } from "react"
-import { useHouseList, type House } from "@/services/house"
+import { useHouseList, type House, FilterState } from "@/services/house"
 import HouseTable from "@/components/HouseTable"
 import HouseGrid from "@/components/HouseGrid"
 import ViewToggle from "@/components/ViewToggle"
 import CardSortControls from "@/components/CardSortControls"
+import FilterControls from "@/components/FilterControls"
 import {
   SortingState,
   Updater,
 } from "@tanstack/react-table"
 
 export default function HomePage() {
+  // 筛选条件状态管理
+  const [filters, setFilters] = useState<FilterState>({
+    keywords: "",
+    township: null,
+    projectId: null,
+    typeName: null,
+    rent: null,
+  })
+
   const { data, isLoading, error } = useHouseList({
-    where: {
-      keywords: "",
-      township: null,
-      projectId: null,
-      typeName: null,
-      rent: null,
-    },
+    where: filters,
     pageSize: 99999, // 获取所有数据
   })
 
@@ -88,6 +92,22 @@ export default function HomePage() {
     setCardSortOrder(sortOrder)
   }
 
+  // 筛选条件处理函数
+  const handleFiltersChange = (newFilters: FilterState) => {
+    setFilters(newFilters)
+  }
+
+  // 清空筛选条件
+  const handleClearFilters = () => {
+    setFilters({
+      keywords: "",
+      township: null,
+      projectId: null,
+      typeName: null,
+      rent: null,
+    })
+  }
+
   // 视图模式切换处理函数
   const handleViewModeChange = (mode: "list" | "card") => {
     setViewMode(mode)
@@ -119,6 +139,7 @@ export default function HomePage() {
 
   return (
     <div className="container mx-auto p-6">
+      {/* 标题和统计信息 */}
       <div className="mb-6 flex-shrink-0">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -140,6 +161,16 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* 筛选控件 */}
+      <div className="mb-6 p-4 bg-muted/30 rounded-lg border">
+        <FilterControls
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          onClearFilters={handleClearFilters}
+        />
+      </div>
+
+      {/* 房源列表 */}
       <div className="min-h-[calc(100vh-200px)]">
         {viewMode === "list" ? (
           <HouseTable
