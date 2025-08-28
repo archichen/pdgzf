@@ -35,9 +35,9 @@ export default function HouseCard({ house }: HouseCardProps) {
         <div className="flex items-start space-x-2 text-sm text-muted-foreground">
           <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
           <div>
-            <div className="font-medium text-foreground">{house.address || "未知地址"}</div>
-            {house.areaInfo?.areaName && (
-              <div className="text-xs text-muted-foreground">{house.areaInfo.areaName}</div>
+            <div className="font-medium text-foreground">{house.project?.townshipName || "未知地点"}</div>
+            {house.address && (
+              <div className="text-xs text-muted-foreground">{house.address}</div>
             )}
           </div>
         </div>

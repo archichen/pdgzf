@@ -18,6 +18,18 @@ export interface House {
   }
   township: string
   region: string
+  project?: {
+    id: number
+    apiId?: string
+    pstructId?: string
+    name: string
+    regionName?: string
+    townshipName?: string
+    province?: string
+    city?: string
+    region?: string
+    township?: string
+  }
 }
 
 export interface HouseListResponse {

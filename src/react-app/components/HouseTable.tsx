@@ -62,13 +62,13 @@ const columns: ColumnDef<House>[] = [
       </div>
     ),
     cell: ({ row }) => {
+      const townshipName = row.original.project?.townshipName
       const address = row.getValue("address") as string
-      const areaName = row.original.areaInfo?.areaName
       return (
         <div>
-          <div className="font-medium">{address || "未知地址"}</div>
-          {areaName && (
-            <div className="text-sm text-muted-foreground">{areaName}</div>
+          <div className="font-medium">{townshipName || "未知地点"}</div>
+          {address && (
+            <div className="text-sm text-muted-foreground">{address}</div>
           )}
         </div>
       )
