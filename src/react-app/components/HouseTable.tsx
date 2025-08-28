@@ -5,9 +5,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { type House } from "@/services/house"
-import ViewToggle from "@/components/ViewToggle"
-import HouseCard from "@/components/HouseCard"
-import CardSortControls from "@/components/CardSortControls"
 import {
   useReactTable,
   getCoreRowModel,
@@ -197,35 +194,13 @@ const columns: ColumnDef<House>[] = [
   },
 ]
 
-interface HouseListProps {
+interface HouseTableProps {
   data: House[]
-  totalCount: number
-  isLoading: boolean
-  error: Error | null
-  viewMode: "list" | "card"
   sorting: SortingState
-  cardSortBy: string
-  cardSortOrder: "asc" | "desc"
-  sortedCardData: House[]
-  onViewModeChange: (mode: "list" | "card") => void
-  onListSortChange: (sorting: Updater<SortingState>) => void
-  onCardSortChange: (sortBy: string, sortOrder: "asc" | "desc") => void
+  onSortingChange: (sorting: Updater<SortingState>) => void
 }
 
-export default function HouseList({
-  data,
-  totalCount,
-  isLoading,
-  error,
-  viewMode,
-  sorting,
-  cardSortBy,
-  cardSortOrder,
-  sortedCardData,
-  onViewModeChange,
-  onListSortChange,
-  onCardSortChange,
-}: HouseListProps) {
+export default function HouseTable({ data, sorting, onSortingChange }: HouseTableProps) {
   // 虚拟化容器引用 - 必须在顶层调用
   const tableContainerRef = useRef<HTMLDivElement>(null)
 
@@ -235,7 +210,7 @@ export default function HouseList({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onSortingChange: onListSortChange,
+    onSortingChange,
     state: {
       sorting,
     },
@@ -251,134 +226,74 @@ export default function HouseList({
 
   const virtualRows = rowVirtualizer.getVirtualItems()
   const totalSize = rowVirtualizer.getTotalSize()
-
-  // 处理加载和错误状态
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">加载中...</div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg text-red-600">加载失败: {error.message}</div>
-      </div>
-    )
-  }
-
   const houseData = table.getRowModel().rows
 
   return (
-    <div className="container mx-auto p-6 flex flex-col h-full overflow-hidden">
-      <div className="mb-6 flex-shrink-0">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">房源列表</h1>
-            <p className="text-muted-foreground mt-2">
-              共 {totalCount} 套可租房源
-            </p>
-          </div>
-          <div className="flex items-center space-x-3">
-            {viewMode === "card" && (
-              <CardSortControls
-                sortBy={cardSortBy}
-                sortOrder={cardSortOrder}
-                onSortChange={onCardSortChange}
-              />
-            )}
-            <ViewToggle viewMode={viewMode} onViewModeChange={onViewModeChange} />
-          </div>
-        </div>
-      </div>
-
-      <div className="flex-1 min-h-0 rounded-md border flex flex-col overflow-hidden">
-        {viewMode === "list" ? (
-          <>
-            <Table>
-              <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableHeader>
-            </Table>
-            
-            {/* 虚拟化的表格体 */}
-            <div 
-              ref={tableContainerRef}
-              className="relative flex-1 overflow-auto"
-            >
-              {houseData.length > 0 ? (
+    <div className="flex-1 min-h-0 rounded-md border flex flex-col overflow-hidden">
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+      </Table>
+      
+      {/* 虚拟化的表格体 */}
+      <div 
+        ref={tableContainerRef}
+        className="relative flex-1 overflow-auto"
+      >
+        {houseData.length > 0 ? (
+          <div
+            style={{
+              height: `${totalSize}px`,
+              width: '100%',
+              position: 'relative',
+            }}
+          >
+            {virtualRows.map((virtualRow) => {
+              const row = houseData[virtualRow.index]
+              return (
                 <div
+                  key={row.id}
+                  className="absolute top-0 left-0 w-full flex items-center border-b bg-background hover:bg-muted/50"
                   style={{
-                    height: `${totalSize}px`,
-                    width: '100%',
-                    position: 'relative',
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
                   }}
                 >
-                  {virtualRows.map((virtualRow) => {
-                    const row = houseData[virtualRow.index]
-                    return (
+                  <div className="flex w-full">
+                    {row.getVisibleCells().map((cell) => (
                       <div
-                        key={row.id}
-                        className="absolute top-0 left-0 w-full flex items-center border-b bg-background hover:bg-muted/50"
-                        style={{
-                          height: `${virtualRow.size}px`,
-                          transform: `translateY(${virtualRow.start}px)`,
-                        }}
+                        key={cell.id}
+                        className="flex-1 px-4 py-3 text-sm"
+                        style={{ minWidth: cell.column.getSize() }}
                       >
-                        <div className="flex w-full">
-                          {row.getVisibleCells().map((cell) => (
-                            <div
-                              key={cell.id}
-                              className="flex-1 px-4 py-3 text-sm"
-                              style={{ minWidth: cell.column.getSize() }}
-                            >
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </div>
-                          ))}
-                        </div>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                       </div>
-                    )
-                  })}
+                    ))}
+                  </div>
                 </div>
-              ) : (
-                <div className="text-center py-12 text-muted-foreground">
-                  暂无数据
-                </div>
-              )}
-            </div>
-          </>
+              )
+            })}
+          </div>
         ) : (
-          /* 卡片视图 */
-          <div className="flex-1 overflow-auto p-4">
-            {houseData.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {sortedCardData.map((house, index) => (
-                  <HouseCard key={`${house.id}-${index}`} house={house} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12 text-muted-foreground">
-                暂无数据
-              </div>
-            )}
+          <div className="text-center py-12 text-muted-foreground">
+            暂无数据
           </div>
         )}
       </div>

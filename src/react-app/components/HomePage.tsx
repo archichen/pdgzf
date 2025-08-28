@@ -1,6 +1,9 @@
 import { useState } from "react"
 import { useHouseList, type House } from "@/services/house"
-import HouseList from "@/components/HouseList"
+import HouseTable from "@/components/HouseTable"
+import HouseGrid from "@/components/HouseGrid"
+import ViewToggle from "@/components/ViewToggle"
+import CardSortControls from "@/components/CardSortControls"
 import {
   SortingState,
   Updater,
@@ -90,20 +93,66 @@ export default function HomePage() {
     setViewMode(mode)
   }
 
+  // 处理加载和错误状态
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-6 flex flex-col h-full overflow-hidden">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg">加载中...</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-6 flex flex-col h-full overflow-hidden">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg text-red-600">加载失败: {error.message}</div>
+        </div>
+      </div>
+    )
+  }
+
+  const houses = data?.data.data || []
+  const totalCount = data?.data.totalCount || 0
+
   return (
-    <HouseList
-      data={data?.data.data || []}
-      totalCount={data?.data.totalCount || 0}
-      isLoading={isLoading}
-      error={error}
-      viewMode={viewMode}
-      sorting={sorting}
-      cardSortBy={cardSortBy}
-      cardSortOrder={cardSortOrder}
-      sortedCardData={getSortedHouses()}
-      onViewModeChange={handleViewModeChange}
-      onListSortChange={handleListSortChange}
-      onCardSortChange={handleCardSortChange}
-    />
+    <div className="container mx-auto p-6 flex flex-col h-full overflow-hidden">
+      <div className="mb-6 flex-shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold">房源列表</h1>
+            <p className="text-muted-foreground mt-2">
+              共 {totalCount} 套可租房源
+            </p>
+          </div>
+          <div className="flex items-center space-x-3">
+            {viewMode === "card" && (
+              <CardSortControls
+                sortBy={cardSortBy}
+                sortOrder={cardSortOrder}
+                onSortChange={handleCardSortChange}
+              />
+            )}
+            <ViewToggle viewMode={viewMode} onViewModeChange={handleViewModeChange} />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 min-h-0">
+        {viewMode === "list" ? (
+          <HouseTable
+            data={houses}
+            sorting={sorting}
+            onSortingChange={handleListSortChange}
+          />
+        ) : (
+          <HouseGrid
+            data={getSortedHouses()}
+          />
+        )}
+      </div>
+    </div>
   )
 }
