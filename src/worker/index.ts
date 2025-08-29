@@ -68,4 +68,10 @@ app.post("/api/v1.0/app/gzf/house/list", async (c) => {
   }
 });
 
+// 获得排队cache
+app.get("/queue", async (c) => {
+  const keys = await c.env.pdgzf_cache.list();
+  return c.json(keys);
+})
+
 export default app;
