@@ -250,6 +250,14 @@ export default function HomePage() {
               <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
               <span>{isRefreshing ? '刷新中...' : '刷新'}</span>
             </Button>
+            <Button
+              onClick={async () => {
+                const resp = await fetch("/queue")
+                console.log(resp);
+              }}
+            >
+              Test
+            </Button>
             <ViewToggle viewMode={viewMode} onViewModeChange={handleViewModeChange} />
           </div>
         </div>
